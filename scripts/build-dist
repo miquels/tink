@@ -1,0 +1,24 @@
+#! /bin/sh
+#
+# build-dist	Build and zip up.
+#
+#
+
+WD=$(pwd)
+trap "cd \"$WD\" && rm -rf dist/tink" EXIT
+
+set -e
+set -x
+
+#gulp
+mkdir dist/tink
+cd app
+cp -av build icons img index.html ../dist/tink/
+cp -av appconfig.json.sample ../dist/tink/appconfig.json
+cd ../dist
+zip -r tink.zip tink
+rm -rf tink
+set +x
+cd ..
+ls -l dist/tink.zip
+

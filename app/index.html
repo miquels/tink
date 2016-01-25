@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>mxTV</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" sizes="192x192" href="icons/mxTV-192x192.png">
+
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" sizes="192x192" href="icons/mxTV-192x192.png">
+
+<meta http-equiv="X-UA-Compatible" value="IE=edge" />
+
+<script src="build/libs.js" ></script>
+<script src="build/app.js" ></script>
+
+<link rel="stylesheet" type="text/css" href="build/styles.css">
+<link rel="stylesheet" type="text/css" href="build/font-awesome/css/font-awesome.min.css">
+
+</head>
+<body>
+
+<script type="text/include" id="tv-nfo-container-def">
+    <div class="tvshow-textnfo-cntr app-nfo">
+      <div class="title"><span data-key="show:title"></span></div>
+      <div class="h-spacer"></div>
+      <div class="info">
+        <div class="infoname" data-key="show:tagline">Tagline:</div>
+        <div class="infovalue" data-key="show:tagline"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="show:genre">Genre:</div>
+        <div class="infovalue" data-key="show:genre"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="show:rating">Rating:</div>
+        <div class="infovalue" data-key="show:rating"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="show:year">Year:</div>
+        <div class="infovalue" data-key="show:year"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="show:premiered">Premiered:</div>
+        <div class="infovalue" data-key="show:premiered"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="show:studio">Studio:</div>
+        <div class="infovalue" data-key="show:studio"></div>
+      </div>
+      <div class="h-spacer">&nbsp;</div>
+      <div class="tvshow-plot app-nfo" data-key="show:plot"></div>
+    </div>
+    <div class="tvshow-poster-cntr app-image" data-img="poster show:poster"><img></div>
+</script>
+
+<script type="text/include" id="app-navbar-def">
+  <div class="nav-home">
+    <i class="fa fa-home"></i>
+  </div>
+  <div class="nav-back">
+    <i class="fa fa-arrow-left"></i>
+  </div>
+  <div class="nav-fullscreen">
+    <i class="fa fa-expand"></i>
+  </div>
+</script>
+
+<div id="page">
+
+<div id="tvshows-bg-img" class="bgscaled-img"></div>
+<div id="tvshows-bg-dimmer" class="bgscaled-dimmer"></div>
+
+<div id="mainmenu" class="app-page">
+  <div class="top"></div>
+  <div class="bgdimmer mostwindow"></div>
+  <div id="main-buttons">
+    <div id="main-movies" class="main-button"><img src="img/movies-folder-by-leftright.png" tabindex="0"></div>
+    <div id="main-tvshows" class="main-button"><img src="img/tvshows-folder-by-leftright.png" tabindex="0"></div>
+  </div>
+  <div class="app-image" data-img="bgimg"
+	data-type="bg" data-target="#tvshows-bg-img"></div>
+  <div class="app-include app-navbar" data-id="app-navbar-def"></div>
+</div>
+
+<div id="tvshows" class="app-page">
+  <div class="top"></div>
+  <div class="bgdimmer mostwindow"></div>
+  <div class="tvlist-container">
+      <div id="tvshow-list" class="tvlist app-list"></div>
+  </div>
+  <div class="app-include tvshow-nfo-cntr" data-id="tv-nfo-container-def"></div>
+  <div class="app-image" data-img="fanart"
+	data-type="bg" data-target="#tvshows-bg-img"></div>
+  <div class="app-include app-navbar" data-id="app-navbar-def"></div>
+</div>
+
+<div id="tvseasons" class="app-page">
+  <div class="top"></div>
+  <div class="bgdimmer mostwindow"></div>
+  <div class="tvlist-container">
+      <div id="tvseason-list" class="tvlist app-list"></div>
+  </div>
+  <div class="app-include tvshow-nfo-cntr" data-id="tv-nfo-container-def"></div>
+  <div class="app-image" data-img="show:fanart"
+	data-type="bg" data-target="#tvshows-bg-img"></div>
+  <div class="app-include app-navbar" data-id="app-navbar-def"></div>
+</div>
+
+<div id="tvepisodes" class="app-page">
+  <div class="top"></div>
+  <div class="bgdimmer mostwindow"></div>
+  <div class="app-image" data-img="show:fanart"
+	data-type="bg" data-target="#tvshows-bg-img"></div>
+  <div class="tvlist-container">
+    <div id="tvepisodelist" class="tvlist app-list"></div>
+  </div>
+  <div class="episode-nfo-cntr">
+    <div class="episode-textnfo-cntr app-nfo">
+      <div class="title"><span data-key="title"></span></div>
+      <div class="h-spacer"></div>
+      <div class="info">
+        <div class="infoname" data-key="runtime">Runtime:</div>
+        <div class="infovalue" data-key="runtime"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="aired">Aired:</div>
+        <div class="infovalue" data-key="aired"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="director">Director:</div>
+        <div class="infovalue" data-key="director"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="rating">Rating:</div>
+        <div class="infovalue" data-key="rating"></div>
+      </div>
+      <div class="episode-plot app-nfo" data-key="plot episodedetails"></div>
+    </div>
+    <div class="episode-thumb-cntr app-image" data-img="thumb"><img></div>
+  </div>
+  <div class="app-include app-navbar" data-id="app-navbar-def"></div>
+</div>
+
+<div id="movies" class="app-page">
+  <div class="top"></div>
+  <div class="bgdimmer mostwindow"></div>
+  <div class="tvlist-container">
+      <div id="movies-list" class="tvlist app-list"></div>
+  </div>
+  <div class="tvshow-nfo-cntr">
+    <div class="tvshow-textnfo-cntr app-nfo">
+      <div class="title"><span data-key="title"></span></div>
+      <div class="h-spacer"></div>
+      <div class="info">
+        <div class="infoname" data-key="tagline">Tagline:</div>
+        <div class="infovalue" data-key="tagline"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="genre">Genre:</div>
+        <div class="infovalue" data-key="genre"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="rating">Rating:</div>
+        <div class="infovalue" data-key="rating"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="year">Year:</div>
+        <div class="infovalue" data-key="year"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="premiered">Premiered:</div>
+        <div class="infovalue" data-key="premiered"></div>
+      </div>
+      <div class="info">
+        <div class="infoname" data-key="studio">Studio:</div>
+        <div class="infovalue" data-key="studio"></div>
+      </div>
+      <div class="h-spacer">&nbsp;</div>
+      <div class="tvshow-plot app-nfo" data-key="plot"></div>
+    </div>
+    <div class="tvshow-poster-cntr app-image" data-img="poster"><img></div>
+  </div>
+  <div class="app-image" data-img="fanart"
+	data-type="bg" data-target="#tvshows-bg-img"></div>
+  <div class="app-include app-navbar" data-id="app-navbar-def"></div>
+</div>
+
+<div id="videoplayer" class="app-page">
+<div id="video-container">
+	<!-- Video -->
+	<video id="video-element">
+	  <!-- <source src="videos/sintel-1024-stereo.mp4" type="video/mp4"> -->
+	</video>
+	<div id="video-sub-container" class="video-stroke-generic">
+		<div id="video-sub1" class="video-subline"></div>
+		<div id="video-sub2" class="video-subline"></div>
+		<div id="video-sub3" class="video-subline"></div>
+	</div>
+	<div id="video-controls">
+	    <div class="video-spacer">&nbsp;</div>
+	    <div id="video-buttons">
+		&nbsp;
+		<i class="video-btn fa fa-fast-backward" id="video-fast-backward"></i>
+		<i class="video-btn fa fa-backward" id="video-backward"></i>
+		<i class="video-btn fa fa-play" id="video-play-pause"></i>
+		<i class="video-btn fa fa-stop" id="video-stop"></i>
+		<i class="video-btn fa fa-forward" id="video-forward"></i>
+		<i class="video-btn fa fa-fast-forward" id="video-fast-forward"></i>
+		<i class="video-btn fa fa-text-width" id="video-subtitles"></i>
+		<i class="video-btn fa fa-expand" id="video-full-screen"></i>
+	    </div>
+	    <div class="video-spacer">&nbsp;</div>
+	    <div id="video-time">
+		<input type="range" id="video-seek-bar" value="0">
+	    </div>
+	    <div class="video-spacer">&nbsp;</div>
+	</div>
+</div>
+</div>
+
+</div>
+
+</body>
+</html>
+

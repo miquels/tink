@@ -1,0 +1,17 @@
+{
+	"mainmenu": [
+		{
+			"name": "TV Series",
+			"tag": "demo",
+			"type": "tvshows",
+			"url": "http://demo.example.net/data/tv-series/"
+		},
+		{
+			"name": "Movies",
+			"tag": "demo",
+			"type": "movies",
+			"url": "dav://demo.example.net/data/movies/"
+		}
+	]
+}
+

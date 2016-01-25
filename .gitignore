@@ -1,0 +1,6 @@
+/*.sh
+app/appconfig.json
+doc/
+dist/[0-9a-zA-Z]*
+app/dist/[0-9a-zA-Z]*
+

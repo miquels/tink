@@ -1,0 +1,44 @@
+{
+  "name": "mxtv",
+  "version": "0.1.0",
+  "description": "mxtv",
+  "main": "app.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "dist": "sh scripts/build-dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Miquel van Smoorenburg",
+  "license": "ISC",
+  "dependencies": {
+    "backbone": "^1.2.x",
+    "hammerjs": "^2.0.x",
+    "jquery": "^2.2.x",
+    "underscore": "^1.8.x"
+  },
+  "devDependencies": {
+    "babel-polyfill": "^6.3.14",
+    "babel-preset-es2015": "^6.3.x",
+    "babelify": "^7.2.x",
+    "browserify": "^13.0.x",
+    "font-awesome": "^4.5.x",
+    "gulp": "^3.9.x",
+    "gulp-autoprefixer": "^3.1.x",
+    "gulp-browserify": "^0.5.x",
+    "gulp-cssnano": "^2.1.x",
+    "gulp-if": "^2.0.0",
+    "gulp-rename": "^1.2.x",
+    "gulp-sass": "^2.1.x",
+    "gulp-sourcemaps": "^1.6.x",
+    "gulp-uglify": "^1.5.x",
+    "gulp-util": "^3.0.x",
+    "lodash": "^4.0.0",
+    "lodash.assign": "^4.0.0",
+    "run-sequence": "^1.1.5",
+    "vinyl-buffer": "^1.0.x",
+    "vinyl-source-stream": "^1.1.x",
+    "watchify": "^3.7.x"
+  }
+}
