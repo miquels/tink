@@ -2,5 +2,6 @@
 app/appconfig.json
 doc/
 dist/[0-9a-zA-Z]*
-app/dist/[0-9a-zA-Z]*
-
+app/build/[0-9a-zA-Z]*
+/Attic/
+/node_modules/
