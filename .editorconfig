@@ -1,0 +1,9 @@
+# top-most EditorConfig file
+root = true
+
+indent_style = tab
+
+# 4 space indentation for .js
+[*.js]
+indent_size = 4
+
