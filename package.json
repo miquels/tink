@@ -1,8 +1,8 @@
 {
-  "name": "mxtv",
+  "name": "tink",
   "version": "0.1.0",
-  "description": "mxtv",
-  "main": "app.js",
+  "description": "A webbased video/media player",
+  "main": "app/app.js",
   "directories": {
     "doc": "doc"
   },
@@ -12,6 +12,10 @@
   },
   "author": "Miquel van Smoorenburg",
   "license": "ISC",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/miquels/tink.git"
+  },
   "dependencies": {
     "backbone": "^1.2.x",
     "hammerjs": "^2.0.x",
