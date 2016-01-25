@@ -24,8 +24,8 @@ CONTENT SERVER CONFIGURATION
 
 Your media files should layed out and named as documented here:
 
-http://kodi.wiki/view/Naming\_video\_files/TV\_shows 
-http://kodi.wiki/view/Naming\_video\_files/Movies
+[Kodi TV shows layout](http://kodi.wiki/view/Naming_video_files/TV_shows)  
+[Kodi Movies layout](http://kodi.wiki/view/Naming_video_files/Movies)
 
 With added restrictions:
 
