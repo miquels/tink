@@ -6,8 +6,8 @@
 
 var Backbone	= require('backbone'),
 	_			= require('underscore'),
-	$			= require('jquery');
-	Backbone.$	= $;
+	$			= require('jquery'),
+	keys		= require('../js/keys');
 
 var css = [
 	'ul {',
@@ -46,14 +46,15 @@ function isiOS() {
 module.exports = Backbone.View.extend({
 
 	events: {
-		"keydown":	"__keyDown",
-		"keyup":	"__keyUp",
+		"keydown":	"_keyDown",
+		"keyup":	"_keyUp",
 	},
 
 	initialize: function(options) {
 
 		console.log('ListviewBase initialize called');
-		this.listenTo(this.model, 'change:items change:focus', this.model_change);
+		this.listenTo(this.model, 'change:items change:focus',
+										this.model_change);
 
 		// copy options.
 		_.extend(this, _.pick(options, [ 'itemHtml' ]));
@@ -63,6 +64,7 @@ module.exports = Backbone.View.extend({
 		this.lastClickTime = 0;
 		this.lastClickTarget = null;
 		this.lastScrollTop;
+		this.focusedItemId = 0;
 
 		if (!isiOS()) {
 			this.$el.on('click', this._click.bind(this));
@@ -85,9 +87,7 @@ module.exports = Backbone.View.extend({
 
 		// fill div with data.
 		this.$el.html(style);
-		this.items(this.model.get('items') || {});
-		this._focus(this.model.get('focus'));
-
+		this.items(this.model.get('items'));
 	},
 
 	// model has changed.
@@ -95,30 +95,14 @@ module.exports = Backbone.View.extend({
 		// new items.
 		if (model.hasChanged('items')) {
 			this.items(model.get('items'));
-			// sets focus as well.
 			return;
 		}
 		// focus change.
 		if (model.hasChanged('focus')) {
-			this._focus(model.get('focus'));
+			var name = model.get('focus') || '';
+			var id = this.findItemByName(name).did;
+			this._focusItemId(id);
 		}
-	},
-
-
-	_getFocus: function() {
-		//console.log('focus', this.model.get('focus'));
-		var items = this.model.get('items');
-		return items[this.model.get('focus')];
-	},
-
-	__keyDown: function(ev) {
-		if (this._keyDown)
-			this._keyDown(ev);
-	},
-
-	__keyUp: function(ev) {
-		if (this._keyUp)
-			this._keyUp(ev);
 	},
 
 	// walk up the tree to find the 'li' item and select it.
@@ -131,21 +115,17 @@ module.exports = Backbone.View.extend({
 		}
 		if (!elem || elem.dataset.id === undefined)
 			return null;
-		//console.log("listviewBase: triggered event on", elem);
-
-		// remember what is focused right now.
-		var item = this.itemArray[elem.dataset.id];
-		this.focusedItemId = elem.dataset.id;
-
 		return {
-			item: item,
+			itemId: elem.dataset.id,
 			elem: elem,
 		};
 	},
 
-	// something was selected.
+	// something was clicked on.
 	_click: function(ev) {
 		var what = this._evSelect(ev);
+
+		// check for doubleclick.
 		var dbl;
 		if (ev.type.match(/touch|click/)) {
 			if (ev.timeStamp < this.lastClickTime + 200 &&
@@ -157,21 +137,24 @@ module.exports = Backbone.View.extend({
 				this.lastClickTarget = ev.target;
 			}
 		}
+
 		if (what) {
 			if (isiOS())
 				what.elem.focus();
-			this.model.set('focus', what.item.name, { silent: true });
+			var id = parseInt(what.itemId);
 			if (dbl || ev.target.className.match(/enter/))
-				this.trigger('enter', what.item);
+				this._enter(id);
 			else
-				this.trigger('select', what.item);
+				this._select(id);
 		}
 	},
 
+	// touchstart; remember position.
 	_touchStart: function(ev) {
 		this.lastScrollTop = this.$el.scrollTop();
 	},
 
+	// touchend; if we scrolled, do nothing.
 	_touchEnd: function(ev) {
 		var st = this.$el.scrollTop();
 		if (Math.abs(st - this.lastScrollTop) > 4)
@@ -179,18 +162,150 @@ module.exports = Backbone.View.extend({
 		this._click(ev);
 	},
 
-	// something was chosen.
-	_enter: function(ev) {
-		var item = this._evSelect(ev);
-		if (item) {
+	// something was chosen: update focus and trigger 'enter' event.
+	_enter: function(id) {
+		if (id == null)
+			id = this.focusedItemId;
+		var item =  this.itemArray[id];
+		this.focusedItemId = id;
+
+		if (item.name) {
 			this.model.set('focus', item.name, { silent: true });
 			this.trigger('enter', item);
 		}
 	},
 
-	// want to go to the previous page
-	_back: function(ev) {
+	// something was selected: update focus and trigger 'select' event.
+	_select: function(id) {
+		if (id == null)
+			id = this.focusedItemId;
+		var item =  this.itemArray[id];
+		this.focusedItemId = id;
+
+		if (item.name) {
+			this.model.set('focus', item.name, { silent: true });
+			this.trigger('select', item);
+		}
+	},
+
+	// back action chosen.
+	_back: function() {
 		this.trigger('back');
+	},
+
+	_keyDown: function(ev) {
+		//console.log('keydown', ev);
+		var key = keys.map(ev);
+		switch (key) {
+			case keys.key.Enter:
+			case keys.key.Right:
+			case keys.key.Space:
+				this._enter();
+				ev.preventDefault();
+				return;
+			case keys.key.Escape:
+			case keys.key.Left:
+			case keys.key.Back:
+				this._back();
+				ev.preventDefault();
+				return;
+			case keys.key.Up:
+				this._arrowUp();
+				ev.preventDefault();
+				return;
+			case keys.key.Down:
+				this._arrowDown();
+				ev.preventDefault();
+				return;
+			case keys.key.PageUp:
+			case keys.key.FastRewind:
+				this._pageUp();
+				ev.preventDefault();
+				return;
+			case keys.key.PageDown:
+			case keys.key.FastForward:
+				this._pageDown();
+				ev.preventDefault();
+				return;
+		}
+		if ((key >= 48 && key <= 57) ||
+			(key >= 65 && key <= 90)) {
+				this._keyAlpha(ev.which);
+			ev.preventDefault();
+			return;
+		}
+	},
+
+	// some keys only take real action when they are released,
+	// this is so that keyboard repeat does the right thing.
+	_keyUp: function(ev) {
+		//console.log('keyup', ev);
+		var key = keys.map(ev);
+		switch (key) {
+			case keys.key.Up:
+			case keys.key.Down:
+			case keys.key.PageUp:
+			case keys.key.PageDown:
+			case keys.key.FastRewind:
+			case keys.key.FastForward:
+				this._select();
+		}
+	},
+
+	// choose item 0-9 a-z
+	_keyAlpha: function(keyCode) {
+		var item = this.findItemByName(String.fromCharCode(keyCode));
+		if (item)
+			this._select(item.did);
+	},
+
+	// select next item
+	_arrowDown: function() {
+		var id = this.focusedItemId + 1;
+		if (id >= this.itemArray.length)
+			id = 0;
+		this._focusItemId(id);
+	},
+
+	// select previous item
+	_arrowUp: function() {
+		var id = this.focusedItemId - 1;
+		if (id < 0)
+			id = this.itemArray.length - 1;
+		this._focusItemId(id);
+	},
+
+	// go forward 1 letter in the alphabet
+	_pageDown: function() {
+		var l = this.itemArray[this.focusedItemId].sortName;
+		if (l == '')
+			return;
+		var id = this.focusedItemId + 1;
+		while (id < this.itemArray.length) {
+			if (this.itemArray[id].sortName[0] != l[0])
+				break;
+			id++;
+		}
+		if (id == this.itemArray.length)
+			id = 0;
+		this._focusItemId(id);
+	},
+
+	// go back 1 letter in the alphabet
+	_pageUp: function() {
+		var l = this.itemArray[this.focusedItemId].sortName;
+		if (l == '')
+			return;
+		var id = this.focusedItemId - 1;
+		while (id >= 0) {
+			if (this.itemArray[id].sortName[0] != l[0])
+				break;
+			id--;
+		}
+		if (id < 0)
+			id = this.itemArray.length - 1;
+		id = this.findItemByName(this.itemArray[id].sortName[0]).did;
+		this._focusItemId(id);
 	},
 
 	// default implementation of itemHtml
@@ -207,7 +322,13 @@ module.exports = Backbone.View.extend({
 	// initialize a new list of items.
 	items: function(items) {
 
-		this.itemMap = items;
+		// fake an empty entry if we have nothing else.
+		if (items == null || _.isEmpty(items)) {
+			items = [{
+				name: '',
+				sortName: '',
+			}];
+		}
 
 		// sort the items
 		var tmp = [];
@@ -239,9 +360,14 @@ module.exports = Backbone.View.extend({
 				return;
 		}
 
+		this.itemMap = items;
+
 		for (var i in itemArray)
-			itemArray[i].did = i;
+			itemArray[i].did = parseInt(i);
 		this.itemArray = itemArray;
+
+		var name = this.model.get('focus') || '';
+		this.focusedItemId = this.findItemByName(name).did;
 
 		// and render.
 		this._render();
@@ -258,35 +384,16 @@ module.exports = Backbone.View.extend({
 	},
 
 	// find an item, or the nearest one alphabetically.
-	findItem: function(name) {
+	findItemByName: function(name) {
 		name = name.toLowerCase().replace(/^the[ 	]+/, '');
 		for (var i in this.itemArray) {
 			//console.log('compare', this.itemArray[i].sortName, name);
 			if (this.itemArray[i].sortName.localeCompare(name) >= 0)
 				return this.itemArray[i];
 		}
-		if (this.itemArray.length > 0)
-			return this.itemArray[0];
-		return null;
+		return this.itemArray[0];
 	},
 
-	// focus one of the items.
-	// if none, focus the first.
-	_focus: function(name) {
-		var item = this.findItem(name || '');
-		if (item != null)
-			this._focusItem(item);
-	},
-
-	// clear items
-	clear: function() {
-		if (this.ul) {
-			this.ul.remove();
-			this.ul = $("<ul>");
-		}
-		this.itemMap = {};
-		this.itemArray = [];
-	},
 });
 
 // vim: tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab

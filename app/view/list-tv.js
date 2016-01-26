@@ -12,19 +12,11 @@ var Backbone	= require('backbone'),
 
 var listbase = require('./list-base.js');
 
-function ord(c) {
-	return c.charCodeAt(0);
-}
-function chr(n) {
-	return String.fromCharCode(n);
-}
-
 module.exports = listbase.extend({
 
 	_initialize: function() {
 		console.log('ListviewTV._initialize');
 
-		this.focusedItemId = -1;
 		this.top = 0;
 
 		// calculate how many items we can fit in this div.
@@ -32,21 +24,16 @@ module.exports = listbase.extend({
 		this.$el.append(ul);
 		this.itemsPP = Math.floor(this.$el.height() / ul.outerHeight());
 
-		console.log('ListviewTV._initialize: $el.height', this.$el.height());
-		console.log('ListviewTV._initialize: ul.height', ul.outerHeight());
-		console.log('ListviewTV._initialize: itemsPP', this.itemsPP);
+		//console.log('ListviewTV._initialize: $el.height', this.$el.height());
+		//console.log('ListviewTV._initialize: ul.height', ul.outerHeight());
+		//console.log('ListviewTV._initialize: itemsPP', this.itemsPP);
 
 		ul.remove();
 	},
 
 	// focus on one of the items.
-	_focusItem: function(item) {
+	_focusItemId: function(did) {
 
-		var did;
-		if (typeof(item) == 'number')
-			did = item;
-		else
-			did = item.did;
 		this.focusedItemId = did;
 
 		// is the item on-screen?
@@ -63,8 +50,6 @@ module.exports = listbase.extend({
 		//console.log('listviewTV._render start');
 
 		var focused = this.focusedItemId;
-		if (focused < 0)
-			focused = 0;
 		var top = Math.floor(focused / this.itemsPP) * this.itemsPP;
 		this.top = top;
 
@@ -84,107 +69,9 @@ module.exports = listbase.extend({
 		this.$el.append(ul);
 		this.ul = ul;
 
+		this.ul.find('[data-id=' + focused + ']').focus();
+
 		return;
-	},
-
-	_keyDown: function(evt) {
-
-		var key = keys.map(evt);
-		console.log("listviewTV._keyDown " + evt.which + ' ' + key);
-
-		switch (key) {
-			case keys.key.Back:
-				console.log('XXX now ' + this.viewname + ' going back');
-				this._back(evt);
-				evt.preventDefault();
-				return;
-		}
-
-		if (this.itemArray.length == 0)
-			return;
-
-		switch (key) {
-			case keys.key.Enter:
-				var item = this._getFocus();
-				if (item)
-					this.trigger('enter', item);
-				evt.preventDefault();
-				return;
-			case keys.key.Left:
-				this._arrowLeft();
-				evt.preventDefault();
-				return;
-			case keys.key.Up:
-				this._arrowUp();
-				evt.preventDefault();
-				return;
-			case keys.key.Right:
-				this._arrowRight();
-				evt.preventDefault();
-				return;
-			case keys.key.Down:
-				this._arrowDown();
-				evt.preventDefault();
-				return;
-		}
-	},
-
-	_keyUp: function(evt) {
-		var key = keys.map(evt);
-		console.log("listviewTV._keyUp " + evt.which + ' ' + key);
-		switch (key) {
-			case keys.key.Up:
-			case keys.key.Down:
-			case keys.key.Left:
-			case keys.key.Right:
-				this._click(evt);
-				evt.preventDefault();
-		}
-	},
-
-	_arrowUp: function() {
-		this.focusedItemId--;
-		if (this.focusedItemId < 0)
-			this.focusedItemId = this.itemArray.length - 1;
-		this._focusItem(this.focusedItemId);
-	},
-
-	_arrowDown: function() {
-		this.focusedItemId++;
-		if (this.focusedItemId >= this.itemArray.length)
-			this.focusedItemId = 0;
-		this._focusItem(this.focusedItemId);
-	},
-
-	_arrowLeft: function() {
-		var l = ord('~');
-		var fid = this.focusedItemId;
-		if (fid >= 0) {
-			var c = ord(this.itemArray[fid].sortName);
-			c--;
-			if (c < ord('a') && c > ord('0'))
-				c = ord('0');
-			if (c < ord('0') || fid == 0)
-				c = ord('~');
-			l = chr(c);
-		}
-		this._focus(l);
-	},
-
-	_arrowRight: function() {
-		var l = ' ';
-		var fid = this.focusedItemId;
-		if (fid >= 0) {
-			console.log('listviewTV._arrowRight: focused is', fid);
-			var c = this.itemArray[fid].sortName.charCodeAt(0);
-			c++;
-			if (c > '0'.charCodeAt(0) && c <= '9'.charCodeAt(0))
-				c = 'a'.charCodeAt(0);
-			if (c > 'z'.charCodeAt(0))
-				c = '0'.charCodeAt(0);
-			l = String.fromCharCode(c);
-		}
-		this._focus(l);
 	},
 });
 

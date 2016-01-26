@@ -55,97 +55,12 @@ module.exports= listbase.extend({
 	},
 
 	// set focus to one of the elements.
-	_focusItem: function(item) {
-		var id = _.isObject ? item.did : item;
+	_focusItemId: function(id) {
+		this.focusedItemId = id;
 		var el = this.ul.find('[data-id=' + id + ']');
 		if (el.length == 0)
 			return;
 		el.focus();
-	},
-
-	_goto: function(item) {
-		//console.log(item);
-		this.model.set('focus', item.name, { silent: true });
-		this._focusItem(item);
-	},
-
-	_keyDown: function(ev) {
-		//console.log('keydown', ev);
-		if (this.itemArray.length == 0)
-			return;
-		var key = keys.map(ev);
-		switch (key) {
-			case keys.key.Enter:
-			case keys.key.Right:
-			case keys.key.Space:
-				this._enter(ev);
-				ev.preventDefault();
-				return;
-			case keys.key.Escape:
-			case keys.key.Left:
-			case keys.key.Back:
-				this._back(ev);
-				ev.preventDefault();
-				return;
-			case keys.key.Up:
-				this._arrowUp();
-				ev.preventDefault();
-				return;
-			case keys.key.Down:
-				this._arrowDown();
-				ev.preventDefault();
-				return;
-		}
-		if ((key >= 48 && key <= 57) ||
-			(key >= 65 && key <= 90)) {
-				this._keyAlpha(ev.which);
-			ev.preventDefault();
-			return;
-		}
-	},
-
-	_keyUp: function(ev) {
-		//console.log('keydup', ev);
-		if (this.itemArray.length == 0)
-			return;
-		if (ev == null)
-			ev = { which: 38 };
-		var key = keys.map(ev);
-		if (key == keys.key.Up || key == keys.key.Down) {
-			var item = this._getFocus();
-			if (item)
-				this.trigger('select', item);
-		}
-	},
-
-	_keyAlpha: function(keyCode) {
-		var item = this.findItem(String.fromCharCode(keyCode));
-		if (item)
-			this._goto(item);
-		this._keyUp();
-	},
-
-	_arrowDown: function(ev) {
-		var item = this._getFocus();
-		//console.log('item', item, id);
-		var id = item ? item.did : -1;
-		//console.log('item2', item, id);
-		id++;
-		if (id >= this.itemArray.length)
-			id = 0;
-		//console.log('goto', id);
-		this._goto(this.itemArray[id]);
-	},
-
-	_arrowUp: function(ev) {
-		if (this.itemArray.length == 0)
-			return;
-		var item = this._getFocus();
-		var id = item ? item.did : 0;
-		id--;
-		if (id < 0)
-			id = this.itemArray.length -1;
-		this._goto(this.itemArray[id]);
 	},
 
 	_browserItemHtml: function(item) {
@@ -181,7 +96,7 @@ module.exports= listbase.extend({
 		this.ul = ul;
 
 		// set focus
-		this._focus(this.model.get('focus'));
+		this._focusItemId(this.focusedItemId);
 
 		//console.log('listviewBrowser: _render appended html in', (new Date().getTime() - t));
 
