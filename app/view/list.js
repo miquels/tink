@@ -1,4 +1,4 @@
 
 
-module.exports = require('./list-browser.js');
+module.exports = require('./list-tv.js');
 

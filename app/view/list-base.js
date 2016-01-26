@@ -7,7 +7,7 @@
 var Backbone	= require('backbone'),
 	_			= require('underscore'),
 	$			= require('jquery'),
-	keys		= require('../js/keys');
+	Key			= require('../js/keys');
 
 var css = [
 	'ul {',
@@ -195,35 +195,35 @@ module.exports = Backbone.View.extend({
 
 	_keyDown: function(ev) {
 		//console.log('keydown', ev);
-		var key = keys.map(ev);
+		var key = Key.map(ev);
 		switch (key) {
-			case keys.key.Enter:
-			case keys.key.Right:
-			case keys.key.Space:
+			case Key.Enter:
+			case Key.Right:
+			case Key.Space:
 				this._enter();
 				ev.preventDefault();
 				return;
-			case keys.key.Escape:
-			case keys.key.Left:
-			case keys.key.Back:
+			case Key.Escape:
+			case Key.Left:
+			case Key.Back:
 				this._back();
 				ev.preventDefault();
 				return;
-			case keys.key.Up:
+			case Key.Up:
 				this._arrowUp();
 				ev.preventDefault();
 				return;
-			case keys.key.Down:
+			case Key.Down:
 				this._arrowDown();
 				ev.preventDefault();
 				return;
-			case keys.key.PageUp:
-			case keys.key.FastRewind:
+			case Key.PageUp:
+			case Key.FastRewind:
 				this._pageUp();
 				ev.preventDefault();
 				return;
-			case keys.key.PageDown:
-			case keys.key.FastForward:
+			case Key.PageDown:
+			case Key.FastForward:
 				this._pageDown();
 				ev.preventDefault();
 				return;
@@ -240,14 +240,14 @@ module.exports = Backbone.View.extend({
 	// this is so that keyboard repeat does the right thing.
 	_keyUp: function(ev) {
 		//console.log('keyup', ev);
-		var key = keys.map(ev);
+		var key = Key.map(ev);
 		switch (key) {
-			case keys.key.Up:
-			case keys.key.Down:
-			case keys.key.PageUp:
-			case keys.key.PageDown:
-			case keys.key.FastRewind:
-			case keys.key.FastForward:
+			case Key.Up:
+			case Key.Down:
+			case Key.PageUp:
+			case Key.PageDown:
+			case Key.FastRewind:
+			case Key.FastForward:
 				this._select();
 		}
 	},
