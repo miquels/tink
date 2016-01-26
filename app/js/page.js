@@ -97,6 +97,8 @@ function backButton() {
 	history.replaceState({ id: backButtonId }, '', window.location);
 	history.pushState({ id: 0 }, '', window.location);
 	$(window).on('popstate', function() {
+		if (!history.state)
+			return;
 		if (history.state.id == backButtonId) {
 			history.forward()
 		} else {
@@ -112,7 +114,8 @@ function setupTouch() {
 }
 
 function setup(options) {
-	backButton();
+	if (!!(window.history && window.history.pushState))
+		backButton();
 	setupTouch();
 	if (options.pageClass)
 		hidePages(options.pageClass, options.noHideId);
