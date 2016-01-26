@@ -25,7 +25,6 @@ var	Backbone	= require('backbone'),
 	Page		= require('../js/page.js'),
 	Util		= require('../js/util.js'),
 	NFO			= require('../js/nfo.js');
-	Backbone.$	= $;
 
 var storeFocus = {};
 

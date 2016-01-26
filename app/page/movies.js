@@ -7,7 +7,6 @@ var Backbone = require('backbone'),
 	_			= require('underscore'),
 	Page		= require('../js/page.js'),
 	Util		= require('../js/util.js');
-	Backbone.$	= $;
 
 var tvlist = require('./tvlist.js');
 

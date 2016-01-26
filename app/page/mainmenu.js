@@ -18,7 +18,6 @@ var Backbone		= require('backbone'),
 	appconfig		= require('../js/appconfig.js'),
 	_				= require('underscore'),
 	$				= require('jquery');
-	Backbone.$		= $;
 
 module.exports = Backbone.View.extend({
 
