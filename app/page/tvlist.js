@@ -175,7 +175,7 @@ module.exports = Backbone.View.extend({
 	},
 
 	back: function() {
-		switch(this.viewName) {
+		switch(this.viewname) {
 		case 'tvshows':
 		case 'movies':
 			Page.switchPage('mainmenu');

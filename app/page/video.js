@@ -12,7 +12,7 @@ var Video = require('../video/video.js');
 
 module.exports = Backbone.View.extend({
 
-	viewName: 'videoplayer',
+	viewname: 'videoplayer',
 
 	initialize: function(options) {
 		console.log('videoplayer.initialize', options);
