@@ -4,8 +4,8 @@
 
 var Backbone	= require('backbone'),
 	_			= require('underscore'),
-	$			= require('jquery');
-	Backbone.$	= $;
+	$			= require('jquery'),
+	keys		= require('../js/keys.js');
 
 var listbase = require('./list-base.js');
 
@@ -51,6 +51,7 @@ module.exports= listbase.extend({
 		// should probably do something like
 		// this.addStyleSheet(css);
 		this.stylesheet = css;
+		this.$el.focus();
 	},
 
 	// set focus to one of the elements.
@@ -60,12 +61,6 @@ module.exports= listbase.extend({
 		if (el.length == 0)
 			return;
 		el.focus();
-	},
-
-	_getFocus: function() {
-		//console.log('focus', this.model.get('focus'));
-		var items = this.model.get('items');
-		return items[this.model.get('focus')];
 	},
 
 	_goto: function(item) {
@@ -78,28 +73,31 @@ module.exports= listbase.extend({
 		//console.log('keydown', ev);
 		if (this.itemArray.length == 0)
 			return;
-		if (ev.which == 13 || ev.which == 39 || ev.which == 32) {
-			this._enter(ev);
-			ev.preventDefault();
-			return;
+		var key = keys.map(ev);
+		switch (key) {
+			case keys.key.Enter:
+			case keys.key.Right:
+			case keys.key.Space:
+				this._enter(ev);
+				ev.preventDefault();
+				return;
+			case keys.key.Escape:
+			case keys.key.Left:
+			case keys.key.Back:
+				this._back(ev);
+				ev.preventDefault();
+				return;
+			case keys.key.Up:
+				this._arrowUp();
+				ev.preventDefault();
+				return;
+			case keys.key.Down:
+				this._arrowDown();
+				ev.preventDefault();
+				return;
 		}
-		if (ev.which == 27 || ev.which == 37) {
-			this.trigger('back');
-			ev.preventDefault();
-			return;
-		}
-		if (ev.which == 38) {
-			this._arrowUp();
-			ev.preventDefault();
-			return;
-		}
-		if (ev.which == 40) {
-			this._arrowDown();
-			ev.preventDefault();
-			return;
-		}
-		if ((ev.which >= 48 && ev.which <= 57) ||
-			(ev.which >= 65 && ev.which <= 90)) {
+		if ((key >= 48 && key <= 57) ||
+			(key >= 65 && key <= 90)) {
 				this._keyAlpha(ev.which);
 			ev.preventDefault();
 			return;
@@ -110,7 +108,10 @@ module.exports= listbase.extend({
 		//console.log('keydup', ev);
 		if (this.itemArray.length == 0)
 			return;
-		if (ev == null || (ev.which >= 37 && ev.which <= 40)) {
+		if (ev == null)
+			ev = { which: 38 };
+		var key = keys.map(ev);
+		if (key == keys.key.Up || key == keys.key.Down) {
 			var item = this._getFocus();
 			if (item)
 				this.trigger('select', item);
@@ -145,11 +146,6 @@ module.exports= listbase.extend({
 		if (id < 0)
 			id = this.itemArray.length -1;
 		this._goto(this.itemArray[id]);
-	},
-
-	_keyBack: function() {
-		if (this.back)
-			this.back();
 	},
 
 	_browserItemHtml: function(item) {

@@ -7,8 +7,8 @@
 
 var Backbone	= require('backbone'),
 	_			= require('underscore'),
-	$			= require('jquery');
-	Backbone.$	= $;
+	$			= require('jquery'),
+	keys		= require('../js/keys.js');
 
 var listbase = require('./list-base.js');
 
@@ -88,41 +88,57 @@ module.exports = listbase.extend({
 	},
 
 	_keyDown: function(evt) {
-		console.log("listviewTV._keyDown", evt.which);
+
+		var key = keys.map(evt);
+		console.log("listviewTV._keyDown " + evt.which + ' ' + key);
+
+		switch (key) {
+			case keys.key.Back:
+				console.log('XXX now ' + this.viewname + ' going back');
+				this._back(evt);
+				evt.preventDefault();
+				return;
+		}
+
 		if (this.itemArray.length == 0)
 			return;
-		if (evt.which == 13) {
-			this._enter(evt);
-			evt.preventDefault();
-			return;
-		}
-		if (evt.which == 37) {
-			this._arrowLeft();
-			evt.preventDefault();
-			return;
-		}
-		if (evt.which == 38) {
-			this._arrowUp();
-			evt.preventDefault();
-			return;
-		}
-		if (evt.which == 39) {
-			this._arrowRight();
-			evt.preventDefault();
-			return;
-		}
-		if (evt.which == 40) {
-			this._arrowDown();
-			evt.preventDefault();
-			return;
+
+		switch (key) {
+			case keys.key.Enter:
+				var item = this._getFocus();
+				if (item)
+					this.trigger('enter', item);
+				evt.preventDefault();
+				return;
+			case keys.key.Left:
+				this._arrowLeft();
+				evt.preventDefault();
+				return;
+			case keys.key.Up:
+				this._arrowUp();
+				evt.preventDefault();
+				return;
+			case keys.key.Right:
+				this._arrowRight();
+				evt.preventDefault();
+				return;
+			case keys.key.Down:
+				this._arrowDown();
+				evt.preventDefault();
+				return;
 		}
 	},
 
 	_keyUp: function(evt) {
-		console.log("listviewTV._keyUp", evt.which);
-		if (evt.which >= 37 && evt.which <= 40) {
-			this._click(evt);
-			evt.preventDefault();
+		var key = keys.map(evt);
+		console.log("listviewTV._keyUp " + evt.which + ' ' + key);
+		switch (key) {
+			case keys.key.Up:
+			case keys.key.Down:
+			case keys.key.Left:
+			case keys.key.Right:
+				this._click(evt);
+				evt.preventDefault();
 		}
 	},
 

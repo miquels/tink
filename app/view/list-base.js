@@ -104,6 +104,13 @@ module.exports = Backbone.View.extend({
 		}
 	},
 
+
+	_getFocus: function() {
+		//console.log('focus', this.model.get('focus'));
+		var items = this.model.get('items');
+		return items[this.model.get('focus')];
+	},
+
 	__keyDown: function(ev) {
 		if (this._keyDown)
 			this._keyDown(ev);
@@ -179,6 +186,11 @@ module.exports = Backbone.View.extend({
 			this.model.set('focus', item.name, { silent: true });
 			this.trigger('enter', item);
 		}
+	},
+
+	// want to go to the previous page
+	_back: function(ev) {
+		this.trigger('back');
 	},
 
 	// default implementation of itemHtml

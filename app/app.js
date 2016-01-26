@@ -18,6 +18,8 @@ var Nfo			= require('./view/nfo.js'),
 	NfoTemplate	= require('./view/nfotemplate.js'),
 	Image		= require('./view/image.js');
 
+var	Platform	= require('./js/platform.js');
+
 // mapping from div-ids to pages for Page.switchPage();
 var Pages = {
 	'mainmenu':		Mainmenu,
@@ -62,9 +64,14 @@ $(document).ready(function() {
 
 	Appconfig.load('appconfig.json',
 		function(config) {
+			// XXX debug
+			//$('body').keydown(function(ev) {
+			//	console.log('body keydown code ' + ev.which);
+			//});
+			Platform.ready();
 			Page.switchPage('mainmenu');
 		}, function(jqXHR, error) {
-			console.log('main: error reading appconfig.cfg:', error);
+			console.log('main: error reading appconfig.cfg: ' + error);
 			Page.switchPage('error', {
 				error: error,
 			});

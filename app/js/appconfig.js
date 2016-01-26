@@ -8,7 +8,7 @@ var config = {};
 
 function load(name, ok, fail) {
 	var cfgurl = location.pathname.replace(/[^\/]*$/, name);
-	console.log('loading config from', cfgurl);
+	console.log('loading config from ' + cfgurl);
 	$.getJSON(cfgurl).then(function(data) {
 		config = data;
 		ok(data);
