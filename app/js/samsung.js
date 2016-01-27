@@ -107,7 +107,7 @@ samsung.mapKey = function(keyCode) {
 		case samsungKey.KEY_TOOLS:
 			return key.Tools;
 	}
-	return inkey;
+	return 0;
 }
 
 if (samsungKey && samsungWidgetApi) {
