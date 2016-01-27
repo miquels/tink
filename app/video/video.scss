@@ -24,18 +24,14 @@
 
 #video-controls {
 	position: absolute;
-	left: 5%;
-	right: 5%;
-	bottom: 2%;
+	margin-left: 5%;
+	margin-right: 5%;
+	margin-bottom: 2%;
 	color: white;
 	opacity: 0;
-	-webkit-transition: opacity .3s;
-	-moz-transition: opacity .3s;
-	-o-transition: opacity .3s;
-	-ms-transition: opacity .3s;
 	transition: opacity .3s;
 	background: rgba(100, 100, 100, 0.5);
-	border-radius: 1em;
+	//border-radius: 1em;
 }
 
 #video-buttons, #video-time, .video-spacer {
@@ -48,7 +44,17 @@
 }
 
 #video-buttons {
-	line-height: 3em;
+	position: relative;
+}
+
+#video-buttons-left: {
+	position: relative;
+	left: 0px;
+}
+
+#video-buttons-right: {
+	position: relative;
+	right: 0px;
 }
 
 .video-spacer {
@@ -56,45 +62,7 @@
 }
 
 .video-btn {
-	/*color: white;*/
-	position: absolute;
-	-webkit-text-stroke: 1px black;
-}
-
-#video-fast-backward {
-	left: 5%;
-}
-
-#video-backward {
-	left: 17%;
-}
-
-#video-play-pause {
-	left: 29%;
-}
-
-#video-stop {
-	left: 41%;
-}
-
-#video-forward {
-	left: 53%;
-}
-
-#video-fast-forward {
-	left: 65%;
-}
-
-#video-closed-caption {
-	left: 77%;
-}
-
-#video-full-screen {
-	left: 89%;
-}
-
-#video-seek-bar {
-	width: 100%;
+	font-size: 18px;
 }
 
 #video-sub-container {

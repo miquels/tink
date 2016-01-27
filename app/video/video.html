@@ -1,30 +1,36 @@
 <div id="video-container">
-	<!-- Video -->
-	<video id="video-element">
-	  <!-- <source src="videos/sintel-1024-stereo.mp4" type="video/mp4"> -->
-	</video>
-	<div id="video-sub-container">
-		<div id="video-sub1" class="video-subline"></div>
-		<div id="video-sub2" class="video-subline"></div>
-		<div id="video-sub3" class="video-subline"></div>
-	</div>
-	<div id="video-controls">
-	<div class="video-spacer">&nbsp;</div>
-	<div id="video-buttons">
-		&nbsp;
-		<i class="video-btn fa fa-3x fa-fast-backward" id="video-fast-backward"></i>
-		<i class="video-btn fa fa-3x fa-backward" id="video-backward"></i>
-		<i class="video-btn fa fa-3x fa-play" id="video-play-pause"></i>
-		<i class="video-btn fa fa-3x fa-stop" id="video-stop"></i>
-		<i class="video-btn fa fa-3x fa-forward" id="video-forward"></i>
-		<i class="video-btn fa fa-3x fa-fast-forward" id="video-fast-forward"></i>
-		<i class="video-btn fa fa-3x fa-text-width" id="video-closed-caption"></i>
-		<i class="video-btn fa fa-3x fa-expand" id="video-full-screen"></i>
-	</div>
-	<div class="video-spacer">&nbsp;</div>
-	<div id="video-time">
-		<input type="range" id="video-seek-bar" value="0">
-	</div>
-	<div class="video-spacer">&nbsp;</div>
-	</div>
+
+  <video id="video-element"></video>
+
+  <div id="video-sub-container">
+    <div id="video-sub1" class="video-subline"></div>
+    <div id="video-sub2" class="video-subline"></div>
+    <div id="video-sub3" class="video-subline"></div>
+  </div>
+
+  <div id="video-controls">
+
+    <div id="video-time">
+      <input type="range" id="video-seek-bar" value="0">
+    </div>
+    <div class="video-spacer">&nbsp;</div>
+
+    <div id="video-buttons">
+      <div id="video-buttons-left">
+        &nbsp;
+        <i class="video-btn material-icons md-light" id="video-play-pause">play_arrow</i>
+        &nbsp;
+        <i class="video-btn material-icons md-light" id="video-stop">stop</i>
+      </div>
+
+      <div id="video-buttons-right">
+        <i class="video-btn material-icons md-light" id="video-closed-caption">chat</i>
+        &nbsp;
+        <i class="video-btn material-icons md-light" id="video-full-screen">fullscreen</i>
+        &nbsp;
+        <!-- <i class="video-btn material-icons md-light">fullscreen_exit</i> -->
+      </div>
+    </div>
+
+  </div>
 </div>
