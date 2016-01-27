@@ -1,5 +1,6 @@
 
 @import 'reset';
+@import 'material';
 
 html, body {
 	color: white;
@@ -179,8 +180,12 @@ html, body {
 	bottom: 25%;
 }
 
-.main-button img:hover {
+.main-button img:focus {
 	width: 51%;
+}
+
+.main-button img:hover {
+	width: 52%;
 }
 
 .main-button img:active {

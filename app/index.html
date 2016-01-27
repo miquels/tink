@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>mxTV</title>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -13,11 +14,17 @@
 
 <meta http-equiv="X-UA-Compatible" value="IE=edge" />
 
-<script src="build/libs.js" ></script>
-<script src="build/app.js" ></script>
-
 <link rel="stylesheet" type="text/css" href="build/styles.css">
 <link rel="stylesheet" type="text/css" href="build/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="build/iconfont/material-icons.css">
+
+<!-- Samsung TV Common widget API -->
+<script src='$MANAGER_WIDGET/Common/API/Widget.js'></script>
+<script src='$MANAGER_WIDGET/Common/API/TVKeyValue.js'></script>
+<script src='$MANAGER_WIDGET/Common/webapi/1.0/webapis.js'></script>
+
+<script src="build/libs.js" ></script>
+<script src="build/app.js" ></script>
 
 </head>
 <body>
@@ -77,8 +84,8 @@
   <div class="top"></div>
   <div class="bgdimmer mostwindow"></div>
   <div id="main-buttons">
-    <div id="main-movies" class="main-button"><img src="img/movies-folder-by-leftright.png" tabindex="0"></div>
-    <div id="main-tvshows" class="main-button"><img src="img/tvshows-folder-by-leftright.png" tabindex="0"></div>
+    <div id="main-movies" class="main-button"><img id="main-movies-img" src="img/movies-folder-by-leftright.png" tabindex="0"></div>
+    <div id="main-tvshows" class="main-button"><img id="main-tvshows-img" src="img/tvshows-folder-by-leftright.png" tabindex="0"></div>
   </div>
   <div class="app-image" data-img="bgimg"
 	data-type="bg" data-target="#tvshows-bg-img"></div>
@@ -190,34 +197,40 @@
 
 <div id="videoplayer" class="app-page">
 <div id="video-container">
-	<!-- Video -->
-	<video id="video-element">
-	  <!-- <source src="videos/sintel-1024-stereo.mp4" type="video/mp4"> -->
-	</video>
-	<div id="video-sub-container" class="video-stroke-generic">
-		<div id="video-sub1" class="video-subline"></div>
-		<div id="video-sub2" class="video-subline"></div>
-		<div id="video-sub3" class="video-subline"></div>
-	</div>
-	<div id="video-controls">
-	    <div class="video-spacer">&nbsp;</div>
-	    <div id="video-buttons">
-		&nbsp;
-		<i class="video-btn fa fa-fast-backward" id="video-fast-backward"></i>
-		<i class="video-btn fa fa-backward" id="video-backward"></i>
-		<i class="video-btn fa fa-play" id="video-play-pause"></i>
-		<i class="video-btn fa fa-stop" id="video-stop"></i>
-		<i class="video-btn fa fa-forward" id="video-forward"></i>
-		<i class="video-btn fa fa-fast-forward" id="video-fast-forward"></i>
-		<i class="video-btn fa fa-text-width" id="video-subtitles"></i>
-		<i class="video-btn fa fa-expand" id="video-full-screen"></i>
-	    </div>
-	    <div class="video-spacer">&nbsp;</div>
-	    <div id="video-time">
-		<input type="range" id="video-seek-bar" value="0">
-	    </div>
-	    <div class="video-spacer">&nbsp;</div>
-	</div>
+
+  <video id="video-element"></video>
+
+  <div id="video-sub-container">
+    <div id="video-sub1" class="video-subline"></div>
+    <div id="video-sub2" class="video-subline"></div>
+    <div id="video-sub3" class="video-subline"></div>
+  </div>
+
+  <div id="video-controls">
+
+    <div id="video-time">
+      <input type="range" id="video-seek-bar" value="0">
+    </div>
+    <div class="video-spacer">&nbsp;</div>
+
+    <div id="video-buttons">
+      <div id="video-buttons-left">
+        &nbsp;
+        <i class="video-btn material-icons md-light" id="video-play-pause">play_arrow</i>
+        &nbsp;
+        <i class="video-btn material-icons md-light" id="video-stop">stop</i>
+      </div>
+
+      <div id="video-buttons-right">
+        <i class="video-btn material-icons md-light" id="video-closed-caption">chat</i>
+        &nbsp;
+        <i class="video-btn material-icons md-light" id="video-full-screen">fullscreen</i>
+        &nbsp;
+        <!-- <i class="video-btn material-icons md-light">fullscreen_exit</i> -->
+      </div>
+    </div>
+
+  </div>
 </div>
 </div>
 
