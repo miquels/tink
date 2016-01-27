@@ -121,11 +121,18 @@ gulp.task('font-awesome', function() {
 	.pipe(gulp.dest('./app/build'));
 });
 
+gulp.task('material-design-icons', function() {
+  return gulp.src([ './node_modules/material-design-icons/iconfont/*' ],
+					{ base: './node_modules/material-design-icons/' })
+	.pipe(gulp.dest('./app/build'));
+});
+
 gulp.task('default', [
 	'js-app-once',
 	'js-lib-once',
 	'sass',
-	'font-awesome'
+	'font-awesome',
+	'material-design-icons',
 ]);
 
 gulp.task('scss-watch', function() {
