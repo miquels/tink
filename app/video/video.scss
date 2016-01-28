@@ -24,9 +24,13 @@
 
 #video-controls {
 	position: absolute;
-	margin-left: 5%;
-	margin-right: 5%;
-	margin-bottom: 2%;
+	padding-top: 1%;
+	padding-left: 1%;
+	padding-right: 1%;
+	padding-bottom: 0.2%;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
 	color: white;
 	opacity: 0;
 	transition: opacity .3s;
@@ -34,35 +38,41 @@
 	/*border-radius: 1em;*/
 }
 
-#video-buttons, #video-time, .video-spacer {
+#video-seek-bar {
+	width: 100%;
+}
+
+#video-buttons, #video-time-range, .video-spacer {
 	position: relative;
 	bottom: 0;
 	left: 0;
-	right: 0;
-	width: 90%;
-	margin: auto;
+	width: 100%;
 }
 
 #video-buttons {
 	position: relative;
+	width: 100%;
+	margin: auto;
 }
 
 #video-buttons-left {
+	float: left;
 	position: relative;
 	left: 0px;
 }
 
 #video-buttons-right {
+	float: right;
 	position: relative;
 	right: 0px;
 }
 
 .video-spacer {
-	height: 5%;
+	height: 0.1%;
 }
 
 .video-btn {
-	font-size: 18px;
+	font-size: 24px;
 }
 
 #video-sub-container {

@@ -22,6 +22,7 @@
 <script src='$MANAGER_WIDGET/Common/API/Widget.js'></script>
 <script src='$MANAGER_WIDGET/Common/API/TVKeyValue.js'></script>
 <script src='$MANAGER_WIDGET/Common/webapi/1.0/webapis.js'></script>
+<!-- Samsung end -->
 
 <script src="build/libs.js" ></script>
 <script src="build/app.js" ></script>
@@ -196,7 +197,7 @@
 </div>
 
 <div id="videoplayer" class="app-page">
-<div id="video-container">
+<div id="video-container" tabindex="0">
 
   <video id="video-element"></video>
 
@@ -208,24 +209,21 @@
 
   <div id="video-controls">
 
-    <div id="video-time">
+    <div id="video-time-range">
       <input type="range" id="video-seek-bar" value="0">
     </div>
     <div class="video-spacer">&nbsp;</div>
 
     <div id="video-buttons">
       <div id="video-buttons-left">
-        &nbsp;
         <i class="video-btn material-icons md-light" id="video-play-pause">play_arrow</i>
-        &nbsp;
         <i class="video-btn material-icons md-light" id="video-stop">stop</i>
+	<span id="video-time" class="video-btn"></span>
       </div>
 
       <div id="video-buttons-right">
         <i class="video-btn material-icons md-light" id="video-closed-caption">chat</i>
-        &nbsp;
         <i class="video-btn material-icons md-light" id="video-full-screen">fullscreen</i>
-        &nbsp;
         <!-- <i class="video-btn material-icons md-light">fullscreen_exit</i> -->
       </div>
     </div>

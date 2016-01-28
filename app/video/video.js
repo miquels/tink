@@ -3,7 +3,8 @@
  */
 
 var $		= require('jquery'),
-	Subs	= require('./subtitles.js');
+	Subs	= require('./subtitles.js'),
+	Key	=	 require('../js/keys.js');
 
 function Video(options) {
 	this.cursor = 'auto';
@@ -11,7 +12,6 @@ function Video(options) {
 	this.initialize.apply(this, arguments);
 	return this;
 }
-module.exports = Video;
 
 function isFullScreen() {
 	return (document.fullScreenElement &&
@@ -66,6 +66,19 @@ function isiOS() {
 	return ua.match(/iPad|iPhone|iPod/i);
 }
 
+function fmt_digits(n) {
+    return n < 10 ? '0' + n : n;
+}
+
+function hhmmss(do_hour, tm) {
+	var h = Math.floor(tm / 3600);
+	var m = Math.floor((tm % 3600) / 60);
+	var s = Math.floor(tm % 60);
+	if (do_hour)
+		return fmt_digits(h) + ':' + fmt_digits(m) + fmt_digits(s);
+	return fmt_digits(m) + ':' + fmt_digits(s);
+}
+
 Video.prototype = {
 	constructor: Video,
 
@@ -91,7 +104,6 @@ Video.prototype = {
 		}
 
 		this.saveCursor();
-		this.el.focus();
 		if (options.url)
 			this.video.src = options.url;
 		if (options.time)
@@ -111,6 +123,8 @@ Video.prototype = {
 		this.stopCb = options.stop;
 		this.seek = -1;
 
+		$('#video-container').focus();
+
 		// Subs
 		this.subs = new Subs();
 		this.subs.getTime(function() {
@@ -129,16 +143,14 @@ Video.prototype = {
 		// Buttons
 		this.playButton = this.el.find("#video-play-pause");
 		this.subButton = this.el.find("#video-subtitles");
-		this.fullScreenButton = this.el.find("#video-full-screen");
-
-		var fastBackButton = this.el.find("#video-fast-backward");
-		var backButton = this.el.find("#video-backward");
-		var fwdButton = this.el.find("#video-forward");
-		var fastFwdButton = this.el.find("#video-fast-forward");
 		var stopButton = this.el.find("#video-stop");
+		this.fullScreenButton = this.el.find("#video-full-screen");
 
 		// Sliders
 		this.seekBar = this.el.find("#video-seek-bar");
+
+		// Info
+		this.timeInfo = this.el.find("#video-time");
 
 		// on mousemove (or tap)
 		this.cntr.mousemove(function() {
@@ -176,6 +188,53 @@ Video.prototype = {
 			});
 		}
 
+		// Event listeners for keys
+		this.cntr.on('keydown', function(ev) {
+
+			this.showControls();
+			console.log('keydown ' + ev.which + ' map ' + Key.map(ev));
+			switch (Key.map(ev)) {
+				case Key.Left:
+					this.setTime(this.video.currentTime - 10);
+					ev.preventDefault();
+					break;
+				case Key.Right:
+					this.setTime(this.video.currentTime + 10);
+					ev.preventDefault();
+					break;
+				case Key.PageUp:
+				case Key.FastRewind:
+					this.setTime(this.video.currentTime - 30);
+					ev.preventDefault();
+					break;
+				case Key.PageDown:
+				case Key.FastForward:
+					this.setTime(this.video.currentTime + 30);
+					ev.preventDefault();
+					break;
+				case Key.Pause:
+					this.pause();
+					ev.preventDefault();
+					break;
+				case Key.Play:
+					this.play(1);
+					ev.preventDefault();
+					break;
+				case Key.Back:
+				case Key.Stop:
+					this.stopped();
+					ev.preventDefault();
+					break;
+				case Key.Space:
+				case 32:
+					if (this.video.paused == true)
+						this.play(3500);
+					else
+						this.pause();
+					break;
+			}
+		}.bind(this));
+
 		// Event listener for the play/pause button
 		this.playButton.on(clickEvent, function() {
 			if (this.video.paused == true)
@@ -184,25 +243,9 @@ Video.prototype = {
 				this.pause();
 		}.bind(this));
 
+		// Event listener for the stop button
 		stopButton.on(clickEvent, function() {
 			this.stopped();
-		}.bind(this));
-
-		backButton.on(clickEvent, function() {
-			this.showControls();
-			this.setTime(this.video.currentTime - 10);
-		}.bind(this));
-		fastBackButton.on(clickEvent, function() {
-			this.showControls();
-			this.setTime(this.video.currentTime - 30);
-		}.bind(this));
-		fwdButton.on(clickEvent, function() {
-			this.showControls();
-			this.setTime(this.video.currentTime + 10);
-		}.bind(this));
-		fastFwdButton.on(clickEvent, function() {
-			this.showControls();
-			this.setTime(this.video.currentTime + 30);
 		}.bind(this));
 
 		// Event listener for the full-screen button
@@ -275,6 +318,11 @@ Video.prototype = {
 		time = this.video.currentTime;
 		if (this.seekBar && !this.seekDragging)
 			this.seekBar[0].value = (100 / this.video.duration) * time;
+		if (this.timeInfo) {
+			var do_hour = !this.video.duration || this.video.duration >= 3600;
+			this.timeInfo.text(hhmmss(do_hour, time) + ' / ' +
+						hhmmss(do_hour, this.video.duration));
+		}
 		this.subs.periodicUpdate();
 	},
 
@@ -340,24 +388,21 @@ Video.prototype = {
 	play: function(controldelay) {
 		this.subs.start();
 		this.video.play();
-		this.playButton.removeClass('fa-play');
-		this.playButton.addClass('fa-pause');
+		this.playButton.text('pause');
 		this.hideControls(controldelay);
 	},
 
 	pause: function() {
 		// Pause the video
 		this.video.pause();
-		this.playButton.removeClass('fa-pause');
-		this.playButton.addClass('fa-play');
+		this.playButton.text('play_arrow');
 		this.showControls();
 	},
 
 	stop: function() {
 		this.video.pause();
 		this.subs.destroy();
-		this.playButton.removeClass('fa-pause');
-		this.playButton.addClass('fa-play');
+		this.playButton.text('play_arrow');
 		if (!this.noFullScreen)
 			setFullScreen(this.cntr[0], false);
 		delete this.video.src;
@@ -370,4 +415,5 @@ Video.prototype = {
 			this.stopCb();
 	},
 };
+module.exports = Video;
 
