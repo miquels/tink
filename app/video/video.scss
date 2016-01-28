@@ -20,6 +20,7 @@
 	margin: 0;
 	padding: 0;
 	background-color: black;
+	outline: 0;
 }
 
 #video-controls {
@@ -35,7 +36,7 @@
 	opacity: 0;
 	transition: opacity .3s;
 	background: rgba(100, 100, 100, 0.5);
-	/*border-radius: 1em;*/
+	outline: 0;
 }
 
 #video-seek-bar {
@@ -72,7 +73,13 @@
 }
 
 .video-btn {
-	font-size: 24px;
+	font-size: 48px;
+	vertical-align: middle;
+}
+
+#video-time {
+	font-size: 32px;
+	vertical-align: middle;
 }
 
 #video-sub-container {

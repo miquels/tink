@@ -123,8 +123,6 @@ Video.prototype = {
 		this.stopCb = options.stop;
 		this.seek = -1;
 
-		$('#video-container').focus();
-
 		// Subs
 		this.subs = new Subs();
 		this.subs.getTime(function() {
@@ -189,6 +187,7 @@ Video.prototype = {
 		}
 
 		// Event listeners for keys
+		this.cntr.find("#video-controls").focus();
 		this.cntr.on('keydown', function(ev) {
 
 			this.showControls();

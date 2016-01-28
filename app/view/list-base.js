@@ -61,10 +61,10 @@ module.exports = Backbone.View.extend({
 
 		this.stylesheet = '';
 		this.itemArray = [];
+		this.focusedItemId = 0;
 		this.lastClickTime = 0;
 		this.lastClickTarget = null;
 		this.lastScrollTop;
-		this.focusedItemId = 0;
 
 		if (!isiOS()) {
 			this.$el.on('click', this._click.bind(this));
@@ -196,6 +196,7 @@ module.exports = Backbone.View.extend({
 	_keyDown: function(ev) {
 		//console.log('keydown', ev);
 		var key = Key.map(ev);
+
 		switch (key) {
 			case Key.Enter:
 			case Key.Right:
