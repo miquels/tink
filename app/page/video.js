@@ -46,7 +46,7 @@ module.exports = Backbone.View.extend({
 			subtitles: subs,
 			noFullScreen: Util.isFullScreen(),
 		});
-		this.vd.play();
+		this.vd.play(3500);
 	},
 
 	back: function() {

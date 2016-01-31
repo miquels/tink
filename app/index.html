@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>mxTV</title>
+<title>TiNK</title>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
@@ -15,14 +15,14 @@
 <meta http-equiv="X-UA-Compatible" value="IE=edge" />
 
 <link rel="stylesheet" type="text/css" href="build/styles.css">
-<link rel="stylesheet" type="text/css" href="build/font-awesome/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="build/iconfont/material-icons.css">
 
 <!-- Samsung TV Common widget API -->
+<script src='$MANAGER_WIDGET/Common/API/Plugin.js'></script>
 <script src='$MANAGER_WIDGET/Common/API/Widget.js'></script>
 <script src='$MANAGER_WIDGET/Common/API/TVKeyValue.js'></script>
 <script src='$MANAGER_WIDGET/Common/webapi/1.0/webapis.js'></script>
-<!-- Samsung end -->
+<!-- Samsung widget end -->
 
 <script src="build/libs.js" ></script>
 <script src="build/app.js" ></script>
@@ -66,13 +66,13 @@
 
 <script type="text/include" id="app-navbar-def">
   <div class="nav-home">
-    <i class="fa fa-home"></i>
+    <i class="material-icons md-light md-em">home</i>
   </div>
   <div class="nav-back">
-    <i class="fa fa-arrow-left"></i>
+    <i class="material-icons md-light md-em">arrow_back</i>
   </div>
   <div class="nav-fullscreen">
-    <i class="fa fa-expand"></i>
+    <i class="material-icons md-light md-em">fullscreen</i>
   </div>
 </script>
 
@@ -197,39 +197,41 @@
 </div>
 
 <div id="videoplayer" class="app-page">
-<div id="video-container" tabindex="0">
 
-  <video id="video-element"></video>
+<div id="video-container">
+  <!--video id="video-element"></video> inserted by javascript -->
+  <div id="video-controller" tabindex="0">
 
-  <div id="video-sub-container">
-    <div id="video-sub1" class="video-subline"></div>
-    <div id="video-sub2" class="video-subline"></div>
-    <div id="video-sub3" class="video-subline"></div>
-  </div>
-
-  <div id="video-controls" tabindex="0">
-
-    <div id="video-time-range">
-      <input type="range" id="video-seek-bar" value="0">
+    <div id="video-sub-container">
+      <div id="video-sub1" class="video-subline video-stroke"></div>
+      <div id="video-sub2" class="video-subline video-stroke"></div>
+      <div id="video-sub3" class="video-subline video-stroke"></div>
     </div>
-    <div class="video-spacer">&nbsp;</div>
 
-    <div id="video-buttons">
-      <div id="video-buttons-left">
-        <i class="material-icons md-light md-48 video-btn" id="video-play-pause">play_arrow</i>
-        <i class="material-icons md-light md-48 video-btn" id="video-stop">stop</i>
+    <div id="video-controls" tabindex="0">
+
+      <div id="video-time-range">
+        <input type="range" id="video-seek-bar" value="0">
+      </div>
+      <!-- <div class="video-spacer">&nbsp;</div> -->
+
+      <div id="video-buttons">
+        <div id="video-buttons-left">
+          <i class="material-icons md-light md-24 video-btn" id="video-play-pause">play_arrow</i>
+          <i class="material-icons md-light md-24 video-btn" id="video-stop">stop</i>
 	<span id="video-time"></span>
-      </div>
+        </div>
 
-      <div id="video-buttons-right">
-        <i class="material-icons md-light md-48 video-btn" id="video-closed-caption">chat</i>
-        <i class="material-icons md-light md-48 video-btn" id="video-full-screen">fullscreen</i>
-        <!-- <i class="material-icons md-light md-48 video-btn">fullscreen_exit</i> -->
+        <div id="video-buttons-right">
+          <i class="material-icons md-light md-24 video-btn" id="video-subtitles">chat</i>
+          <i class="material-icons md-light md-24 video-btn" id="video-full-screen">fullscreen</i>
+          <!-- <i class="material-icons md-light md-24 video-btn">fullscreen_exit</i> -->
+        </div>
       </div>
     </div>
-
   </div>
 </div>
+
 </div>
 
 </div>

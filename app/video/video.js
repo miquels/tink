@@ -2,18 +2,23 @@
  *	Customized video player.
  */
 
-var $		= require('jquery'),
-	Subs	= require('./subtitles.js'),
-	Key	=	 require('../js/keys.js');
+var $				= require('jquery'),
+	Subs			= require('./subtitles.js'),
+	Key				= require('../js/keys.js'),
+	SamsungVideo	= require('./samsungvideo.js');
 
 function Video(options) {
 	this.cursor = 'auto';
 	this._initialize.apply(this, arguments);
 	this.initialize.apply(this, arguments);
+	//if (SamsungAudio)
+	//	this.samsungAudio = new SamsungAudio();
 	return this;
 }
 
 function isFullScreen() {
+	if (SamsungVideo)
+		return true;
 	return (document.fullScreenElement &&
 			document.fullScreenElement !== null)
         			|| document.mozFullScreen
@@ -21,6 +26,8 @@ function isFullScreen() {
 }
 
 function setFullScreen(elem, enable) {
+	if (SamsungVideo)
+		return;
 	var m;
 	if (elem && enable !== false) {
 		m = [	'requestFullscreen', 'msRequestFullscreen',
@@ -53,7 +60,7 @@ function showSubs(elem, sub) {
 	//console.log('showSubs', elem, sub);
 	for (var i = 0; i < elem.length; i++) {
 		if (i >= sub.text.length) {
-			elem[i].innerHTML = (i > 1) ? '' : '&nbsp';
+			elem[i].innerHTML = '';
 		} else {
 			//console.log(sub.text[i]);
 			elem[i].innerHTML = sub.text[i];
@@ -71,11 +78,13 @@ function fmt_digits(n) {
 }
 
 function hhmmss(do_hour, tm) {
+	if (!tm || isNaN(tm))
+		return '-';
 	var h = Math.floor(tm / 3600);
 	var m = Math.floor((tm % 3600) / 60);
 	var s = Math.floor(tm % 60);
 	if (do_hour)
-		return fmt_digits(h) + ':' + fmt_digits(m) + fmt_digits(s);
+		return fmt_digits(h) + ':' + fmt_digits(m) + ':' + fmt_digits(s);
 	return fmt_digits(m) + ':' + fmt_digits(s);
 }
 
@@ -97,11 +106,13 @@ Video.prototype = {
 			this.noFullScreen = true;
 
 		if (this.noFullScreen) {
-			this.fullScreenButton.addClass('video-btn-inactive');
+				this.fullScreenButton.addClass('md-inactive');
 		} else {
-			this.fullScreenButton.removeClass('video-btn-inactive');
+			this.fullScreenButton.removeClass('md-inactive');
 			setFullScreen(this.cntr[0], true);
 		}
+		if (SamsungVideo)
+			this.fullScreenButton.hide();
 
 		this.saveCursor();
 		if (options.url)
@@ -110,10 +121,10 @@ Video.prototype = {
 			this.setTime(options.Time);
 		if (options.subtitles) {
 			//console.log('set subtitles to', options.subtitles);
-			this.subButton.removeClass('video-btn-inactive');
+			this.subButton.removeClass('md-inactive');
 		} else {
 			//console.log('NO SUBS');
-			this.subButton.addClass('video-btn-inactive');
+			this.subButton.addClass('md-inactive');
 		}
 	},
 
@@ -122,6 +133,7 @@ Video.prototype = {
 		this.el = options.el;
 		this.stopCb = options.stop;
 		this.seek = -1;
+		this.cntr = this.el.find("#video-container");
 
 		// Subs
 		this.subs = new Subs();
@@ -135,8 +147,26 @@ Video.prototype = {
 
 		// Video
 		var $video = this.el.find("#video-element");
-		this.video = $video[0];
-		this.cntr = this.el.find("#video-container");
+		if ($video.length == 0) {
+			// insert video element.
+			if (SamsungVideo) {
+				$video = $('<div>').attr('id', 'video-element');
+				this.video = new SamsungVideo({ el: $video[0] });
+			} else {
+				$video = $('<video>').attr('id', 'video-element');
+				this.video = $video[0];
+			}
+			this.cntr.prepend($video);
+		} else {
+			this.video = $video[0];
+		}
+
+		//$video.on('keydown', (ev) => {
+		//	console.log('keydown on video ' + ev.which);
+		//});
+		//$('body').on('keydown', (ev) => {
+		//	console.log('keydown on body ' + ev.which);
+		//});
 
 		// Buttons
 		this.playButton = this.el.find("#video-play-pause");
@@ -152,8 +182,9 @@ Video.prototype = {
 
 		// on mousemove (or tap)
 		this.cntr.mousemove(function() {
-			if (!this.seekDragging)
+			if (!this.seekDragging) {
 				this.showControls();
+			}
 		}.bind(this));
 
 		// XXX FIXME
@@ -188,53 +219,80 @@ Video.prototype = {
 
 		// Event listeners for keys
 		this.cntr.find("#video-controls").focus();
-		this.cntr.on('keydown', function(ev) {
 
+		this.cntr.on('keydown', (ev) => {
+
+			//console.log('keydown ' + ev.which + ' map ' + Key.map(ev));
 			this.showControls();
-			console.log('keydown ' + ev.which + ' map ' + Key.map(ev));
+
+			var timeDelta;
+
 			switch (Key.map(ev)) {
 				case Key.Left:
-					this.setTime(this.video.currentTime - 10);
-					ev.preventDefault();
+					timeDelta = -10;
 					break;
 				case Key.Right:
-					this.setTime(this.video.currentTime + 10);
-					ev.preventDefault();
+					timeDelta = 10;
 					break;
 				case Key.PageUp:
 				case Key.FastRewind:
-					this.setTime(this.video.currentTime - 30);
-					ev.preventDefault();
+					timeDelta = -30;
 					break;
 				case Key.PageDown:
 				case Key.FastForward:
-					this.setTime(this.video.currentTime + 30);
-					ev.preventDefault();
+					timeDelta = 30;
 					break;
 				case Key.Pause:
 					this.pause();
-					ev.preventDefault();
 					break;
 				case Key.Play:
 					this.play(1);
-					ev.preventDefault();
 					break;
 				case Key.Back:
 				case Key.Stop:
 					this.stopped();
-					ev.preventDefault();
 					break;
 				case Key.Space:
 				case 32:
 					if (this.video.paused == true)
-						this.play(3500);
+						this.play(1000);
 					else
 						this.pause();
 					break;
+				case Key.Blue:
+				case Key.Subtitle:
+					this.subsOnOff();
+					break;
+				case Key.Exit:
+					return;
+				case Key.VolUp:
+				case Key.VolDown:
+				case Key.Mute:
+					return;
+				break;
 			}
-		}.bind(this));
 
-		// Event listener for the play/pause button
+			ev.preventDefault();
+			if (timeDelta) {
+				this.seeking = true;
+				if (this.video.skip) {
+					this.video.skip(timeDelta);
+				} else {
+					if (this.video.paused == true) {
+						this.setTime(this.video.currentTime + timeDelta);
+					} else {
+						this.video.pause();
+						this.setTime(this.video.currentTime + timeDelta);
+						this.video.play();
+					}
+				}
+			}
+
+			if (this.samsungAudio)
+				this.samsungAudio.handleKey(Key.map(ev));
+
+		});
+
 		this.playButton.on(clickEvent, function() {
 			if (this.video.paused == true)
 				this.play(3500);
@@ -313,42 +371,55 @@ Video.prototype = {
 
 	},
 
-	updateTime: function(time) {
-		time = this.video.currentTime;
+	updateTime: function() {
+		var duration = this.video.duration || 0;
+		var time = this.video.currentTime || 0;
 		if (this.seekBar && !this.seekDragging)
-			this.seekBar[0].value = (100 / this.video.duration) * time;
+			this.seekBar[0].value = (100 / duration) * time;
 		if (this.timeInfo) {
-			var do_hour = !this.video.duration || this.video.duration >= 3600;
+			var do_hour = duration >= 3600;
 			this.timeInfo.text(hhmmss(do_hour, time) + ' / ' +
-						hhmmss(do_hour, this.video.duration));
+						hhmmss(do_hour, duration));
 		}
 		this.subs.periodicUpdate();
 	},
 
 	setTime: function(time) {
+		var duration = this.video.duration || 0;
+		if (time >= duration)
+			time = duration - 1;
+		if (time < 0)
+			time = 0;
 		this.video.currentTime = time;
-		this.seekBar[0].value = (100 / this.video.duration) * time;
+		this.seekBar[0].value = (100 / duration) * time;
 		this.subs.periodicUpdate();
 	},
 
 	setTimePct: function(pct) {
-		console.log('updateTimePct', pct);
-		this.setTime((this.video.duration / 100) * pct);
+		//console.log('updateTimePct', pct);
+		var duration = this.video.duration || 0;
+		this.setTime((duration / 100) * pct);
 	},
 
 	hideControls: function(delay) {
 		if (delay) {
-			if (!this.tmOut)
-				this.tmOut = setTimeout(this.hideControls.bind(this), delay);
+			if (this.tmOut == null) {
+				this.tmOut = setTimeout(() => {
+					this.hideControls(0);
+				}, delay);
+			}
 			return;
 		}
 		this.el.find('#video-controls').css('opacity', '0');
 		this.el.css('cursor', 'none');
-		this.tmOut = null;
+		if (this.tmOut != null) {
+			clearTimeout(this.tmOut);
+			this.tmOut = null;
+		}
 	},
 
 	showControls: function(permanent) {
-		if (this.tmOut) {
+		if (this.tmOut != null) {
 			clearTimeout(this.tmOut);
 			this.tmOut = null;
 		}
@@ -367,7 +438,6 @@ Video.prototype = {
 
 	subsOnOff: function() {
 		if (this.subsOn) {
-			console.log('stop subs');
 			this.subsOn = false;
 			this.subs.stop();
 			return;
@@ -377,7 +447,6 @@ Video.prototype = {
 			s = this.subtitles.nl || this.subtitles.on || this.subtitles.en;
 		if (s) {
 			this.subs.load(s).then(function() {
-				console.log('start subs', s);
 				this.subsOn = true;
 				this.subs.start();
 			}.bind(this));
@@ -385,6 +454,10 @@ Video.prototype = {
 	},
 
 	play: function(controldelay) {
+		this.cntr.find("#video-controls").focus();
+		this.updateTime();
+		if (controldelay && controldelay > 1)
+			this.showControls();
 		this.subs.start();
 		this.video.play();
 		this.playButton.text('pause');
@@ -394,17 +467,20 @@ Video.prototype = {
 	pause: function() {
 		// Pause the video
 		this.video.pause();
-		this.playButton.text('play_arrow');
+		//this.playButton.text('play_arrow');
+		this.playButton.html('&#xE037;');
 		this.showControls();
 	},
 
 	stop: function() {
 		this.video.pause();
 		this.subs.destroy();
-		this.playButton.text('play_arrow');
+		//this.playButton.text('play_arrow');
+		this.playButton.html('&#xE037;');
 		if (!this.noFullScreen)
 			setFullScreen(this.cntr[0], false);
-		delete this.video.src;
+		if (this.video.src != null && this.video.src != "")
+			this.video.src = "";
 		this.showControls();
 	},
 

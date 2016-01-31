@@ -65,7 +65,7 @@ module.exports= listbase.extend({
 
 	_browserItemHtml: function(item) {
 		return '<div class="itemdiv">' + _.escape(item.name) + '</div>' +
-				'<div class="enterdiv"><i class="enter fa fa-chevron-circle-right"></i></div>';
+				'<div class="enterdiv"><i class="enter material-icons md-light md-em">play_circle_outline</i></div>';
 		//return '<div>' + _.escape(item.name) + '</div>';
 	},
 

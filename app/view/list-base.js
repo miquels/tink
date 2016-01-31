@@ -128,7 +128,7 @@ module.exports = Backbone.View.extend({
 		// check for doubleclick.
 		var dbl;
 		if (ev.type.match(/touch|click/)) {
-			if (ev.timeStamp < this.lastClickTime + 200 &&
+			if (ev.timeStamp < this.lastClickTime + 400 &&
 				ev.target == this.lastClickTarget) {
 					dbl = true;
 					this.lastClickTime = 0;
@@ -194,7 +194,7 @@ module.exports = Backbone.View.extend({
 	},
 
 	_keyDown: function(ev) {
-		//console.log('keydown', ev);
+		console.log('XXX list-base keydown ' + ev.which);
 		var key = Key.map(ev);
 
 		switch (key) {

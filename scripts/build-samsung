@@ -1,0 +1,21 @@
+#! /bin/sh
+
+config=app/config.xml
+
+name=tink
+version=$(sed -ne 's/^.*<ver>\(.*\)<\/ver>.*$/\1/p' $config)
+date=$(date +%Y%m%d)
+location=Europe
+
+dest=~/Samsung/WWW/Widget
+
+file="${name}_${version}_${location}_${date}.zip"
+rm -rf "$dest/$file"
+
+cd app
+zip -r "$dest/$file" \
+	app.js appconfig.json build config.xml icons img \
+	index.html widget.info
+cd "$dest"
+ls -l "$file"
+

@@ -114,13 +114,6 @@ gulp.task('sass', function() {
 	.pipe(gulp.dest('./app/build'));
 });
 
-gulp.task('font-awesome', function() {
-  return gulp.src([ './node_modules/font-awesome/css/font-awesome.min.css',
-					'./node_modules/font-awesome/fonts/*' ],
-					{ base: './node_modules/' })
-	.pipe(gulp.dest('./app/build'));
-});
-
 gulp.task('material-design-icons', function() {
   return gulp.src([ './node_modules/material-design-icons/iconfont/*' ],
 					{ base: './node_modules/material-design-icons/' })
@@ -131,7 +124,6 @@ gulp.task('default', [
 	'js-app-once',
 	'js-lib-once',
 	'sass',
-	'font-awesome',
 	'material-design-icons',
 ]);
 
@@ -143,7 +135,7 @@ gulp.task('scss-watch', function() {
 });
 
 gulp.task('watch', function() {
-	runseq(	[ 'sass', 'js-lib-once', 'font-awesome' ],
+	runseq(	[ 'sass', 'js-lib-once', 'material-design-icons' ],
 			[ 'js-app-watch', 'scss-watch' ]);
 });
 
