@@ -7,14 +7,15 @@
 // pass 'el: element' (DOM element) to constructor.
 //
 function SamsungVideo(opts) {
-    this.state = -1;
 
 	var el = opts.el || opts.element;
 	this.el = el;
 	this.element = el;
 	this.width = el.offsetWidth;
 	this.height = el.offsetHeight;
-	console.log('XXX construct el is', el, 'wxh', this.width, this.height, 'id', el.id);
+
+    this.state = -1;
+	this.audio = document.getElementById("pluginObjectAudio");
 
 	return this;
 }
@@ -36,6 +37,7 @@ SamsungVideo.prototype = {
 	AVPlayer :		{},
 	state:			UNKNOWN,
 	curTime:		0,
+	seekTime:		null,
 	loading:		false,
 	duration:		0,
 	url:			null,
@@ -46,19 +48,58 @@ SamsungVideo.prototype = {
 	},
 
 	set currentTime(tm) {
-		this.skip(tm - this.curTime);
-		this.curTime = tm;
+		this.wantedTime = tm;
+		if (!this.buffering) {
+			this.curTime = tm;
+			this.skip(tm - this.curTime);
+		}
 	},
 
 	get paused() {
 		return this.state == PAUSED;
 	},
 
+	get volume() {
+		return this.audio ? this.audio.GetVolume() / 100 : 0.2;
+	},
+
+	set volume(v) {
+		if (this.audio == null)
+			return;
+		console.log('XXX SamsungVideo.setvolume' + v);
+		v = parseInt(v * 100);
+		if (v > 100) v = 100;
+		if (v < 0) v = 0;
+		var vol = this.audio.GetVolume();
+		if (vol < v) {
+			while (this.audio.GetVolume() < v)
+				this.audio.SetVolumeWithKey(0);
+			this.el.dispatchEvent(new Event('volumechange'));
+			return;
+		}
+		if (vol > v) {
+			while (this.audio.GetVolume() > v)
+				this.audio.SetVolumeWithKey(1);
+			this.el.dispatchEvent(new Event('volumechange'));
+			return;
+		}
+	},
+
+	get muted() {
+		return this.audio ? this.audio.GetUserMute() == 1 : false;
+	},
+
+	set muted(mute) {
+		if (this.audio)
+			this.audio.SetUserMute(mute ? 1 : 0);
+		this.el.dispatchEvent(new Event('volumechange'));
+	},
+
 	pause: function() {
 		if (this.state == PLAYING) {
 			this.AVPlayer.pause();
 			this.state = PAUSED;
-			console.log('XXX pause this.el is', this.el);
+			console.log('XXX SamsungVideo.pause');
 			this.el.dispatchEvent(new Event('pause'));
 		}
 	},
@@ -67,7 +108,7 @@ SamsungVideo.prototype = {
 		if (this.state == PAUSED) {
 			this.AVPlayer.resume();
 			this.state = PLAYING;
-			console.log('XXX play this.el is', this.el);
+			console.log('XXX SamsungVideo.play');
 			this.el.dispatchEvent(new Event('play'));
 			this.el.dispatchEvent(new Event('playing'));
 			return;
@@ -76,7 +117,6 @@ SamsungVideo.prototype = {
         this.AVPlayer.play(
 			() => {
 				this.state = PLAYING;
-				console.log('play2 XXX this.el is', this.el);
 				this.el.dispatchEvent(new Event('playing'));
 			},
 			() => {
@@ -90,7 +130,7 @@ SamsungVideo.prototype = {
 		if (this.state != STOPPED && this.state != UNKNOWN) {
 			this.state = STOPPED;
 			this.AVPlayer.stop();
-			console.log('XXX stop this.el is', this.el);
+			console.log('XXX SamsungVideo.stop');
 			this.el.dispatchEvent(new Event('ended'));
 		}
 	},
@@ -104,6 +144,7 @@ SamsungVideo.prototype = {
 		// reset state.
 		delete this.state;
 		delete this.curTime;
+		delete this.seekTime;
 		delete this.duration;
 		delete this.loading;
 		delete this.buffering;
@@ -119,12 +160,9 @@ SamsungVideo.prototype = {
 			// get a fresh AVPlay object if needed.
 			try {
 				var avplay = global.webapis.avplay;
-				console.log('global.webapis.avplay is ', avplay);
-				console.log('calling getAVPlay ');
 				avplay.getAVPlay(this.onAVPlayObtained.bind(this), () => {
 					console.log('SamsungVideo: getAVPlay: error');
 				});
-				console.log('done calling getAVPlay ');
 			} catch(e) {
 				console.log('SamsungVideo: getAVPlay:' + e.message);
 				return null;
@@ -138,7 +176,7 @@ SamsungVideo.prototype = {
         try {
         	this.AVPlayer.open(this.url);
 			this.loading = true;
-			console.log('XXX set src, open this.el is', this.el);
+			console.log('XXX SamsungVideo.set src()');
 			this.el.dispatchEvent(new Event('loadstart'));
 		} catch(e) {
 			console.log('AVPlayer.open ' + url + ' failed: ' + e.message);
@@ -150,7 +188,7 @@ SamsungVideo.prototype = {
 
 	// non-standard.
 	skip: function(secs) {
-		console.log('skip ' + secs);
+		console.log('XXX SamsungVideo.skip ' + secs);
 		if (this.state == PLAYING || this.state == PAUSED) {
 			if (secs > 0)
 				this.AVPlayer.jumpForward(secs);
@@ -165,26 +203,27 @@ SamsungVideo.prototype = {
 				this.buffering = true;
 				if (this.loading) {
 					this.duration = this.AVPlayer.getDuration() / 1000;
-					console.log('XXX onbufferingstart (loading) this.duration is', this.duration);
+					console.log('XXX SamsungVideo.onbufferingstart (loading)');
 					this.el.dispatchEvent(new Event('loadedmetadata'));
 				}
-				console.log('XXX onbufferingstart this.el is', this.el);
+				console.log('XXX SamsungVideo.onbufferingstart');
 				this.el.dispatchEvent(new Event('waiting'));
 			},
 			onbufferingprogress: (percent) => {
 				this.buffering = true;
-				console.log('XXX onbufferingprogress this.el is', this.el);
+				console.log('XXX SamsungVideo.onbufferingprogress');
 				this.el.dispatchEvent(new Event('waiting'));
 			},
 			onbufferingcomplete: (percent) => {
 				this.buffering = false;
 				if (this.loading) {
-					console.log('XXX onbufferingcomplete (loading) this.el is', this.el);
+					console.log('XXX SamsungVideo.onbufferingcomplete (loading)');
 					this.el.dispatchEvent(new Event('loadeddata'));
 					this.el.dispatchEvent(new Event('canplay'));
 					this.el.dispatchEvent(new Event('canplaythrough'));
 					this.loading = false;
 				}
+			console.log('XXX SamsungVideo.onbufferingcomplete');
 			},
 		};
 	},
@@ -201,7 +240,7 @@ SamsungVideo.prototype = {
 			onstreamcompleted: () => {
 				this.AVPlayer.stop();
 				this.state = STOPPED;
-				console.log('XXX onstreamcompleted this.el is', this.el);
+				console.log('XXX SamsungVideo.onstreamcompleted');
 				this.el.dispatchEvent(new Event('ended'));
 			},
 			onerror: () => {
@@ -214,10 +253,9 @@ SamsungVideo.prototype = {
 	onAVPlayObtained: function(avplay) {
 
 		this.AVPlayer = avplay;
-		console.log('XXX onAVPlayObtained avplay is now', avplay, 'containerid', this.el.id);
 
 		var zindex = this.el.style['z-index'];
-		console.log('zindex is', zindex);
+		console.log('SamsungVideo.onAVPlayObtained zindex is' + zindex);
 		if (zindex == null)
 			zindex  = 0;
 		else

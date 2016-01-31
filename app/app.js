@@ -52,7 +52,7 @@ function navButtons() {
 	});
 }
 
-$(document).ready(function() {
+window.addEventListener('load', function main() {
 
 	Page.setup({
 			pages:			Pages,

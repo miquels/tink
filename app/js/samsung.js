@@ -11,20 +11,25 @@ var tvKey;
 var widgetAPI;
 var pluginAPI;
 var Plugin = {};
-
 var Common = global.Common;
+
 if (Common && Common.API && Common.API.Widget) {
-	module.exports = samsung;
 	tvKey = new Common.API.TVKeyValue();
 	widgetAPI = new Common.API.Widget();
 	pluginAPI = new Common.API.Plugin();
+
+	samsung.tvKey = tvKey;
+	samsung.plugin = Plugin;
+	samsung.widgetAPI = widgetAPI;
+	samsung.pluginAPI = pluginAPI;
+	module.exports = samsung;
 } else  {
 	module.exports = null;
 }
 
 var pluginList = {
 	pluginObjectAudio:		'SAMSUNG-INFOLINK-AUDIO',
-//	pluginObjectTV:			'SAMSUNG-INFOLINK-TV',
+	pluginObjectTV:			'SAMSUNG-INFOLINK-TV',
 	pluginObjectTVMW:		'SAMSUNG-INFOLINK-TVMW',
 	pluginObjectNetwork:	'SAMSUNG-INFOLINK-NETWORK',
 	pluginObjectNNavi:		'SAMSUNG-INFOLINK-NNAVI',
@@ -32,45 +37,30 @@ var pluginList = {
 //	sefPlayer:				'SAMSUNG-INFOLINK-SEF',
 };
 
-function createPlugins() {
+function initPlugins() {
 	for (var id in pluginList) {
-		var clsid = pluginList[id];
 		var elem = document.getElementById(id);
 		if (elem && elem.nodeName.match(/object/i))
-			return;
-
-		console.log('samsung.Plugin create: ' + id + ' ' + clsid);
-		elem = document.createElement('object');
-		elem.id = id;
-		elem.setAttribute('classid', 'clsid:' + clsid);
-		elem.setAttribute('style',
-			'opacity:0.0;background-color:#000000;width:0px;height:0px;');
-		document.body.appendChild(elem);
+			Plugin[id] = elem;
+		else
+			console.log('Samsung.initPlugins: plugin ' + id + ' not found');
 	}
 }
 
 samsung.ready = function() {
 
-	createPlugins();
+	initPlugins();
 
-	// enable platform volume up/down/mute keys.
-	document.getElementById('pluginObjectNNavi').SetBannerState(1);
+	Plugin.pluginObjectNNavi.SetBannerState(1);
 
-	console.log('unregister ' + tvKey.KEY_VOL_UP);
 	pluginAPI.unregistKey(tvKey.KEY_VOL_UP);
-	console.log('unregister ' + tvKey.KEY_VOL_DOWN);
 	pluginAPI.unregistKey(tvKey.KEY_VOL_DOWN);
-	console.log('unregister ' + tvKey.KEY_MUTE);
 	pluginAPI.unregistKey(tvKey.KEY_MUTE);
-	console.log('unregister ' + tvKey.KEY_PANEL_VOL_UP);
 	pluginAPI.unregistKey(tvKey.KEY_PANEL_VOL_UP);
-	console.log('unregister ' + tvKey.KEY_PANEL_VOL_DOWN);
 	pluginAPI.unregistKey(tvKey.KEY_PANEL_VOL_DOWN);
 
 	// tell TV we're ready.
-	if (widgetAPI) {
-		widgetAPI.sendReadyEvent();
-	}
+	widgetAPI.sendReadyEvent();
 };
 
 samsung.exit = function() {

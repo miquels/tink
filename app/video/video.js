@@ -11,8 +11,6 @@ function Video(options) {
 	this.cursor = 'auto';
 	this._initialize.apply(this, arguments);
 	this.initialize.apply(this, arguments);
-	//if (SamsungAudio)
-	//	this.samsungAudio = new SamsungAudio();
 	return this;
 }
 
@@ -222,25 +220,25 @@ Video.prototype = {
 
 		this.cntr.on('keydown', (ev) => {
 
-			//console.log('keydown ' + ev.which + ' map ' + Key.map(ev));
+			console.log('keydown ' + ev.which + ' map ' + Key.map(ev));
 			this.showControls();
 
 			var timeDelta;
 
 			switch (Key.map(ev)) {
 				case Key.Left:
-					timeDelta = -10;
+					timeDelta = -15;
 					break;
 				case Key.Right:
-					timeDelta = 10;
+					timeDelta = 15;
 					break;
 				case Key.PageUp:
 				case Key.FastRewind:
-					timeDelta = -30;
+					timeDelta = -100;
 					break;
 				case Key.PageDown:
 				case Key.FastForward:
-					timeDelta = 30;
+					timeDelta = 100;
 					break;
 				case Key.Pause:
 					this.pause();
@@ -266,9 +264,14 @@ Video.prototype = {
 				case Key.Exit:
 					return;
 				case Key.VolUp:
+					this.video.volume += 0.01;
+				break;
 				case Key.VolDown:
+					this.video.volume -= 0.01;
+					break;
 				case Key.Mute:
-					return;
+					this.muted = !this.muted;
+					break;
 				break;
 			}
 
@@ -287,9 +290,6 @@ Video.prototype = {
 					}
 				}
 			}
-
-			if (this.samsungAudio)
-				this.samsungAudio.handleKey(Key.map(ev));
 
 		});
 
