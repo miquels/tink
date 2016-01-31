@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.samsung.com/">
+	<ThumbIcon itemtype="string">icons/icon_106x87.png</ThumbIcon>
+	<BigThumbIcon itemtype="string">icons/icon_115x95.png	</BigThumbIcon>
+	<ListIcon itemtype="string">icons/icon_85x70.png</ListIcon>
+	<BigListIcon itemtype="string">icons/icon_95x78.png</BigListIcon>
+
+	<category>video</category>
+	<autoUpdate>n</autoUpdate>
+
+	<cpname>Samsung</cpname>
+	<cpauthjs/>
+	<login>n</login>
+
+	<ver>0.113</ver>
+	<mgrver></mgrver>
+
+	<fullwidget>y</fullwidget>
+	<srcctl>y</srcctl>
+	<ticker>n</ticker>
+	<childlock>n</childlock>
+	<audiomute>y</audiomute>
+	<videomute>y</videomute>
+	<dcont>y</dcont>
+	<movie>y</movie>
+	<type>user</type>
+	
+	<widgetname>TiNK</widgetname>
+	<description>TiNK</description>
+
+	<width>960</width>
+	<height>540</height>
+
+	<author>
+		<name>Mike</name>
+		<email/>
+		<link/>
+		<organization>Unorganized</organization>
+	</author>
+</widget>

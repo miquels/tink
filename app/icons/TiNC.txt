@@ -1,0 +1,19 @@
+
+ThumbIconHD :    icon_158x130
+BigThumbIconHD : icon_173x143
+ListIconHD :     icon_128x105
+BigListIconHD :  icon_143x118
+
+Logo mxtv.jpeg generated with:
+
+http://socialmedia.trademarkia.com/logo-creator-free-advanced.aspx
+  Font Name:    TradeGotBolConTwe   Font Size:        72px
+  Font Style:   Regular             Text Effect:      Single Outline
+  Drop Shadow:  [v] Show Shadow     Outline Color:    rgb(0, 10, 153)
+  Shadow Color: rgb(96, 0, 20)      Background:       [v] Show Background Color
+  Text Color:   Solid Text Color    Background Color: rgb(203, 54, 0)
+  Text Color:   rgb(216, 255, 255)
+
+And converted to icons with:
+for i in 106x87 115x95 85x70 95x78; do convert TiNC.jpeg -resize $i icon_$i.png; done
+
