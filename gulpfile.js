@@ -23,7 +23,7 @@ var fs = require('fs');
 // application bundler
 function getAppBundler(opts) {
 	var opts = assign({}, opts, {
-		entries: ['./app/app.js'],
+		entries: [ './app/app.js'],
 		debug: true,
 		bundleExternal: false,
 	});
@@ -54,7 +54,7 @@ function runBundler(b, opts) {
 	// Add transformation tasks to the pipeline here.
 	.pipe(gulpif(opts.uglify, uglify()))
 
-    .pipe(gulpif(opts.maps, sourcemaps.write('./')))
+    .pipe(gulpif(opts.maps, sourcemaps.write({ sourceRoot: '/' })))
     .pipe(gulp.dest('./app/build'));
 }
 

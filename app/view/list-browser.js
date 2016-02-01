@@ -4,8 +4,7 @@
 
 var Backbone	= require('backbone'),
 	_			= require('underscore'),
-	$			= require('jquery'),
-	keys		= require('../js/keys.js');
+	$			= require('jquery');
 
 var listbase = require('./list-base.js');
 

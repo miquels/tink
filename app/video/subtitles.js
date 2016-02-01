@@ -164,14 +164,13 @@ Subs.prototype = {
 		return $.ajax(url, {
 			beforeSend: function(xhr) {
 				xhr.overrideMimeType("text/plain; charset=iso-8859-1");
-				console.log(xhr);
 			},
 			dataType: 'text',
 		}).then(function(data) {
 			this.subtitles = parseSrt(data);
 			if (this.subtitles == null)
 				return $.Deferred().reject();
-			console.log('subtitles loaded', this.url);
+			//console.log('subtitles loaded', this.url);
 			this.changed = true;
 			return this;
 		}.bind(this));
@@ -245,7 +244,7 @@ Subs.prototype = {
 		this.timerId = setTimeout(function() {
 			this.periodicUpdate();
 		}.bind(this), d);
-		console.log('set timer in', d, 'secs');
+		//console.log('set timer in', d, 'secs');
 	},
 
 	// get the subtitles for a certain timepoint.
@@ -320,7 +319,7 @@ Subs.prototype = {
 			return;
 		var sub = this.get(this._getTime());
 		if (sub.changed && this.subcb) {
-			console.log('update subs');
+			//console.log('update subs');
 			this.subcb(sub);
 		}
 	},
@@ -336,7 +335,7 @@ Subs.prototype = {
 		this.timerId = null;
 		if (this.subcb) {
 			this.changed = true;
-			console.log('stop, set to empty');
+			//console.log('stop, set to empty');
 			this.subcb(this._empty(0, true));
 		}
 		this.idx = -1;

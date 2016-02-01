@@ -7,7 +7,7 @@
 var Backbone	= require('backbone'),
 	_			= require('underscore'),
 	$			= require('jquery'),
-	Key			= require('../js/keys');
+	Key			= require('../platform/keys.js');
 
 var css = [
 	'ul {',

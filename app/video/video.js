@@ -4,43 +4,14 @@
 
 var $				= require('jquery'),
 	Subs			= require('./subtitles.js'),
-	Key				= require('../js/keys.js'),
-	SamsungVideo	= require('./samsungvideo.js');
+	Key				= require('../platform/keys.js'),
+	Platform		= require('../platform/platform.js');
 
 function Video(options) {
 	this.cursor = 'auto';
 	this._initialize.apply(this, arguments);
 	this.initialize.apply(this, arguments);
 	return this;
-}
-
-function isFullScreen() {
-	if (SamsungVideo)
-		return true;
-	return (document.fullScreenElement &&
-			document.fullScreenElement !== null)
-        			|| document.mozFullScreen
-        			|| document.webkitIsFullScreen;
-}
-
-function setFullScreen(elem, enable) {
-	if (SamsungVideo)
-		return;
-	var m;
-	if (elem && enable !== false) {
-		m = [	'requestFullscreen', 'msRequestFullscreen',
-				'mozRequestFullScreen', 'webkitRequestFullscreen' ];
-	} else {
-		m = [	'exitFullscreen', 'msExitFullscreen',
-				'mozCancelFullScreen', 'webkitExitFullscreen' ];
-		elem = document;
-	}
-	for (var f in m) {
-		if (elem[m[f]]) {
-			elem[m[f]]();
-			break;
-		}
-	}
 }
 
 function sliderPos(el, ev) {
@@ -100,17 +71,17 @@ Video.prototype = {
 		this.hideControls();
 
 		this.noFullScreen = options.noFullScreen;
-		if (navigator.userAgent.match(/iPad|iPhone|iPod/))
+		if (!Platform.canFullScreen) {
 			this.noFullScreen = true;
+			this.fullScreenButton.hide();
+		}
 
 		if (this.noFullScreen) {
 				this.fullScreenButton.addClass('md-inactive');
 		} else {
 			this.fullScreenButton.removeClass('md-inactive');
-			setFullScreen(this.cntr[0], true);
+			Platform.setFullScreen(this.cntr[0], true);
 		}
-		if (SamsungVideo)
-			this.fullScreenButton.hide();
 
 		this.saveCursor();
 		if (options.url)
@@ -127,6 +98,8 @@ Video.prototype = {
 	},
 
 	_initialize: function(options) {
+
+		console.log('Video._initialize'); //, options);
 
 		this.el = options.el;
 		this.stopCb = options.stop;
@@ -146,25 +119,14 @@ Video.prototype = {
 		// Video
 		var $video = this.el.find("#video-element");
 		if ($video.length == 0) {
-			// insert video element.
-			if (SamsungVideo) {
-				$video = $('<div>').attr('id', 'video-element');
-				this.video = new SamsungVideo({ el: $video[0] });
-			} else {
-				$video = $('<video>').attr('id', 'video-element');
-				this.video = $video[0];
-			}
+			// insert fresh video element.
+			var elem = Platform.videoElement({ id: 'video-element' });
+			this.video = Platform.videoObject({ el: elem });
+			$video = $(elem);
 			this.cntr.prepend($video);
 		} else {
 			this.video = $video[0];
 		}
-
-		//$video.on('keydown', (ev) => {
-		//	console.log('keydown on video ' + ev.which);
-		//});
-		//$('body').on('keydown', (ev) => {
-		//	console.log('keydown on body ' + ev.which);
-		//});
 
 		// Buttons
 		this.playButton = this.el.find("#video-play-pause");
@@ -308,7 +270,7 @@ Video.prototype = {
 		// Event listener for the full-screen button
 		this.fullScreenButton.on(clickEvent, function() {
 			if (!this.noFullScreen)
-				setFullScreen(this.cntr[0], !isFullScreen());
+				Platform.setFullScreen(this.cntr[0], !Platform.isFullScreen());
 		}.bind(this));
 
 		// Event listener for the subtitles button.
@@ -467,18 +429,16 @@ Video.prototype = {
 	pause: function() {
 		// Pause the video
 		this.video.pause();
-		//this.playButton.text('play_arrow');
-		this.playButton.html('&#xE037;');
+		this.playButton.html('&#xE037;'); // play_arrow
 		this.showControls();
 	},
 
 	stop: function() {
 		this.video.pause();
 		this.subs.destroy();
-		//this.playButton.text('play_arrow');
-		this.playButton.html('&#xE037;');
+		this.playButton.html('&#xE037;'); // play_arrow
 		if (!this.noFullScreen)
-			setFullScreen(this.cntr[0], false);
+			Platform.setFullScreen(this.cntr[0], false);
 		if (this.video.src != null && this.video.src != "")
 			this.video.src = "";
 		this.showControls();

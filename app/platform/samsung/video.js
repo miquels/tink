@@ -193,7 +193,7 @@ SamsungVideo.prototype = {
 			if (secs > 0)
 				this.AVPlayer.jumpForward(secs);
 			if (secs < 0)
-				this.AVPlayer.jumpBackward(secs);
+				this.AVPlayer.jumpBackward(0 - secs);
 			if (this.state == PAUSED)
 				this.AVPlayer.pause();
 		}

@@ -18,7 +18,7 @@ var Nfo			= require('./view/nfo.js'),
 	NfoTemplate	= require('./view/nfotemplate.js'),
 	Image		= require('./view/image.js');
 
-var	Platform	= require('./js/platform.js');
+var	Platform	= require('./platform/platform.js');
 
 // mapping from div-ids to pages for Page.switchPage();
 var Pages = {
