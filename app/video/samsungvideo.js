@@ -1,5 +1,5 @@
 /*
- * samsungvideo.js	minimal HTML5 video element emulation using the
+ * samsungvideo.js	HTML5 video element emulation using the
  *					native samsung player.
  */
 
@@ -48,11 +48,9 @@ SamsungVideo.prototype = {
 	},
 
 	set currentTime(tm) {
-		this.wantedTime = tm;
-		if (!this.buffering) {
-			this.curTime = tm;
-			this.skip(tm - this.curTime);
-		}
+		console.log('XXX set currentTime skip to '+ (tm - this.curTime));
+		var delta = tm - this.curTime;
+		this.skip(delta);
 	},
 
 	get paused() {
@@ -67,7 +65,7 @@ SamsungVideo.prototype = {
 		if (this.audio == null)
 			return;
 		console.log('XXX SamsungVideo.setvolume' + v);
-		v = parseInt(v * 100);
+		v = parseInt((v * 100) + 0.5);
 		if (v > 100) v = 100;
 		if (v < 0) v = 0;
 		var vol = this.audio.GetVolume();
@@ -190,10 +188,14 @@ SamsungVideo.prototype = {
 	skip: function(secs) {
 		console.log('XXX SamsungVideo.skip ' + secs);
 		if (this.state == PLAYING || this.state == PAUSED) {
+			if (this.state == PAUSED)
+				this.AVPlayer.resume();
 			if (secs > 0)
 				this.AVPlayer.jumpForward(secs);
 			if (secs < 0)
 				this.AVPlayer.jumpBackward(secs);
+			if (this.state == PAUSED)
+				this.AVPlayer.pause();
 		}
 	},
 
@@ -214,7 +216,7 @@ SamsungVideo.prototype = {
 				console.log('XXX SamsungVideo.onbufferingprogress');
 				this.el.dispatchEvent(new Event('waiting'));
 			},
-			onbufferingcomplete: (percent) => {
+			onbufferingcomplete: () => {
 				this.buffering = false;
 				if (this.loading) {
 					console.log('XXX SamsungVideo.onbufferingcomplete (loading)');
@@ -223,7 +225,7 @@ SamsungVideo.prototype = {
 					this.el.dispatchEvent(new Event('canplaythrough'));
 					this.loading = false;
 				}
-			console.log('XXX SamsungVideo.onbufferingcomplete');
+				console.log('XXX SamsungVideo.onbufferingcomplete');
 			},
 		};
 	},
