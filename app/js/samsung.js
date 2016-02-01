@@ -22,11 +22,18 @@ if (Common && Common.API && Common.API.Widget) {
 	samsung.plugin = Plugin;
 	samsung.widgetAPI = widgetAPI;
 	samsung.pluginAPI = pluginAPI;
+
+	window.onShow = function() {
+		if (samsung.onShow)
+			samsung.onShow();
+	};
+
 	module.exports = samsung;
 } else  {
 	module.exports = null;
 }
 
+// list of plugin objects.
 var pluginList = {
 	pluginObjectAudio:		'SAMSUNG-INFOLINK-AUDIO',
 	pluginObjectTV:			'SAMSUNG-INFOLINK-TV',
@@ -37,6 +44,9 @@ var pluginList = {
 //	sefPlayer:				'SAMSUNG-INFOLINK-SEF',
 };
 
+// initialize plugins. XXX would like to load plugins here as
+// well by using document.createElement, but can't get it
+// to work .. yet.
 function initPlugins() {
 	for (var id in pluginList) {
 		var elem = document.getElementById(id);
@@ -47,26 +57,37 @@ function initPlugins() {
 	}
 }
 
-samsung.ready = function() {
-
-	initPlugins();
-
-	Plugin.pluginObjectNNavi.SetBannerState(1);
-
+// This function is called through the samsung-specific
+// window.onShow hook/event. Only after 'onShow' are things
+// *really* set up to go, and calls like pluginAPI.unregistKey
+// cannot be used earlier.
+samsung.onShow = function() {
+	console.log('samsung.onShow');
 	pluginAPI.unregistKey(tvKey.KEY_VOL_UP);
 	pluginAPI.unregistKey(tvKey.KEY_VOL_DOWN);
 	pluginAPI.unregistKey(tvKey.KEY_MUTE);
 	pluginAPI.unregistKey(tvKey.KEY_PANEL_VOL_UP);
 	pluginAPI.unregistKey(tvKey.KEY_PANEL_VOL_DOWN);
+};
+
+// called when everything has loaded.
+samsung.ready = function() {
+
+	console.log('samsung.ready');
+
+	initPlugins();
+	Plugin.pluginObjectNNavi.SetBannerState(1);
 
 	// tell TV we're ready.
 	widgetAPI.sendReadyEvent();
 };
 
+// exit the app.
 samsung.exit = function() {
 	widgetAPI.sendReturnEvent();
 };
 
+// map key.
 samsung.mapKey = function(keyCode) {
 
 	switch (keyCode) {
