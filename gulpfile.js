@@ -100,8 +100,6 @@ gulp.task('sass', function() {
   return gulp.src('app/scss/styles.scss')
 	.pipe(sourcemaps.init())
 	.pipe(sass.sync().on('error', sass.logError))
-	.pipe(sourcemaps.write({includeContent: false}))
-	.pipe(sourcemaps.init({loadMaps: true}))
 	.pipe(autoprefixer({
 		browsers: [
 			'> 1%',
