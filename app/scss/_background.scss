@@ -1,0 +1,36 @@
+.bgdimmer {
+	background: rgba(0, 0, 0, 0.8);
+}
+
+.bgscaled-img {
+    position : absolute;
+    right : 0px;
+    top : 0px;
+    width : 90%;
+    height : 90%;
+    background: #505050;
+    background-size: cover;
+}
+
+.bgscaled-dimmer {
+    position : absolute;
+    right : 0px;
+    top : 0px;
+    width : 90%;
+    height : 90%;
+}
+
+.bgscaled-dimmer:after {
+    position: absolute;
+    left : 0; right: 0; top: 0; bottom: 0;
+    content: "";
+    background: linear-gradient(90deg,
+				rgba(0,0,0,1) 0%,
+				rgba(0,0,0,0) 20%),
+		linear-gradient(0deg,
+				rgba(0,0,0,1) 0%,
+				rgba(0,0,0,0) 20%);
+    /* enables hardware acceleration for transforms */
+    -webkit-transform: translate3d(0, 0, 0);
+}
+

@@ -1,0 +1,33 @@
+.tvlist-container {
+	position: relative;
+	float: left;
+	left: 0%;
+	height: calc(70% - 2em);
+	padding: 2%;
+	width: 40%;
+	overflow: hidden;
+}
+
+.tvlist {
+	position: relative;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+	height: 100%;
+	width: 100%;
+}
+
+.tvlist ul {
+	margin: 0;
+	padding: 0;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+
+.tvlist li {
+	font-family: verdana, sans-serif;
+	font-size: 1.2em;
+	padding-left: 1em;
+	line-height: 1.6em;
+	color: white;
+}
+
