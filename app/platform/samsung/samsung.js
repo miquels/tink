@@ -10,7 +10,6 @@ var tvKey;
 var widgetAPI;
 var pluginAPI;
 var Plugin = {};
-var Common = global.Common;
 
 // list of plugin objects.
 var pluginList = {
@@ -23,25 +22,42 @@ var pluginList = {
 //	sefPlayer:				'SAMSUNG-INFOLINK-SEF',
 };
 
-// initialize plugins. XXX would like to load plugins here as
-// well by using document.createElement, but can't get it
-// to work .. yet.
-function initPlugins() {
+// list of scripts we need to load.
+var scriptList = [
+	'$MANAGER_WIDGET/Common/API/Plugin.js',
+	'$MANAGER_WIDGET/Common/API/Widget.js',
+	'$MANAGER_WIDGET/Common/API/TVKeyValue.js',
+	'$MANAGER_WIDGET/Common/webapi/1.0/webapis.js',
+];
+
+// load objects and scripts.
+function loadPlugins() {
 	for (var id in pluginList) {
-		var elem = document.getElementById(id);
-		if (elem && elem.nodeName.match(/object/i))
-			Plugin[id] = elem;
-		else
-			console.log('Samsung.initPlugins: plugin ' + id + ' not found');
+		var o = document.createElement('object');
+		o.setAttribute('id', id);
+		o.setAttribute('classid', 'clsid:' + pluginList[id]);
+		o.style.position = 'absolute';
+		o.style.left = 0;
+		o.style.right = 0;
+		o.style.top = 0;
+		o.style.bottom = 0;
+		document.body.appendChild(o);
+		Plugin[id] = o;
+	}
+	for (var idx in scriptList) {
+		var s = document.createElement('script');
+		s.src = scriptList[idx];
+		document.body.appendChild(s);
 	}
 }
+loadPlugins();
 
-// This function is called through the samsung-specific
-// window.onShow hook/event. Only after 'onShow' are things
-// *really* set up to go, and calls like pluginAPI.unregistKey
-// cannot be used earlier.
+// window.onShow() is samsung specific, and runs after plugins are ready.
 function onShow() {
 	console.log('samsung.onShow');
+
+	// enable native volume controls.
+	Plugin.pluginObjectNNavi.SetBannerState(1);
 	pluginAPI.unregistKey(tvKey.KEY_VOL_UP);
 	pluginAPI.unregistKey(tvKey.KEY_VOL_DOWN);
 	pluginAPI.unregistKey(tvKey.KEY_MUTE);
@@ -51,11 +67,20 @@ function onShow() {
 
 var samsung = {
 
-	// called when everything has loaded.
+	// called by main() when everything has loaded.
 	ready: function() {
-		console.log('samsung.ready');
-		initPlugins();
-		Plugin.pluginObjectNNavi.SetBannerState(1);
+		var Common = global.Common;
+		//console.log('samsung.ready', Common);
+		tvKey = new Common.API.TVKeyValue();
+		widgetAPI = new Common.API.Widget();
+		pluginAPI = new Common.API.Plugin();
+
+		samsung.tvKey = tvKey;
+		samsung.plugin = Plugin;
+		samsung.widgetAPI = widgetAPI;
+		samsung.pluginAPI = pluginAPI;
+
+		window.onShow = onShow;
 
 		// tell TV we're ready.
 		widgetAPI.sendReadyEvent();
@@ -178,18 +203,8 @@ var samsung = {
 	},
 };
 
-if (Common && Common.API && Common.API.Widget) {
-	tvKey = new Common.API.TVKeyValue();
-	widgetAPI = new Common.API.Widget();
-	pluginAPI = new Common.API.Plugin();
-
-	samsung.tvKey = tvKey;
-	samsung.plugin = Plugin;
-	samsung.widgetAPI = widgetAPI;
-	samsung.pluginAPI = pluginAPI;
-
-	window.onShow = onShow;
-
+if (navigator.userAgent.match(/SmartHub/) &&
+	navigator.userAgent.match(/SmartTV/)) {
 	module.exports = samsung;
 } else  {
 	module.exports = null;

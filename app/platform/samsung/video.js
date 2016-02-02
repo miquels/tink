@@ -19,11 +19,7 @@ function SamsungVideo(opts) {
 
 	return this;
 }
-if (global.webapis && global.webapis.avplay) {
-	module.exports = SamsungVideo;
-} else {
-	module.exports = null;
-}
+module.exports = SamsungVideo;
 
 var	UNKNOWN = -1;
 var	STOPPED = 0;
