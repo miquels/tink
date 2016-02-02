@@ -62,6 +62,16 @@ window.addEventListener('load', function main() {
 	});
 	navButtons();
 
+	// make sure the focus is always on some element.
+	document.body.addEventListener('focusout', function(ev) {
+		var elem = ev.target;
+		setTimeout(function() {
+			var d = document.activeElement;
+			if (d == null || d.tagName == 'BODY')
+				elem.focus();
+		}, 5);
+	});
+
 	Appconfig.load('appconfig.json',
 		function(config) {
 			// XXX debug
