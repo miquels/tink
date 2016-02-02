@@ -126,7 +126,12 @@ gulp.task('default', [
 ]);
 
 gulp.task('scss-watch', function() {
-	var w = gulp.watch( [ './app/scss/*.scss', './app/video/*.scss' ], [ 'sass' ]);
+	var w = gulp.watch( [
+			'./app/scss/*.scss',
+			'./app/video/*.scss' ,
+			'./app/view/*.scss' ],
+		[ 'sass' ]
+	);
 	w.on('change', function(ev) {
 		console.log(ev.path + ' was ' + ev.type + ', running tasks...');
 	});

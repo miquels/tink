@@ -9,35 +9,6 @@ var Backbone	= require('backbone'),
 	$			= require('jquery'),
 	Key			= require('../platform/keys.js');
 
-var css = [
-	'ul {',
-	'	list-style-type: none;',
-	'}',
-	'li {',
-	'	position: relative;',
-	'	width: 100%;',
-	'	display: block;',
-	'	text-decoration: none;',
-	'	white-space: nowrap;',
-	'	overflow-x: hidden;',
-	'	overflow-y: auto;',
-	'}',
-	'li:focus {',
-	'	background-color: #FF8C00;',
-	'}',
-	'.counter {',
-	'	color: #333333;',
-	'	background-color: #bbbbbb;',
-	'	position: absolute;',
-	'	right: 0px;',
-	'	border: 0px;',
-	'	border-radius: 0.5em;',
-	'	padding-left: 0.45em;',
-	'	padding-right: 0.45em;',
-	'}',
-].join("\n");
-
-
 function isiOS() {
 	var ua = navigator.userAgent;
 	return ua.match(/iPad|iPhone|iPod/);
@@ -77,16 +48,15 @@ module.exports = Backbone.View.extend({
 		if (this._initialize)
 			this._initialize(options);
 
-		// generate scoped CSS
-		var style = "<style scoped>" + css + this.stylesheet + "</style>";
+		// add css
+		this.$el.addClass('app-listview');
 
 		// make ourself tabbable and focusable, and focus.
-		this.$el.attr("tabindex", 0);
-		this.$el.css('outline', 0);
+		this.$el.css('tabindex', "0");
+		this.$el.css('outline', "0");
 		this.$el.focus();
 
 		// fill div with data.
-		this.$el.html(style);
 		this.items(this.model.get('items'));
 	},
 

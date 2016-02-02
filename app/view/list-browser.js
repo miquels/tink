@@ -13,33 +13,6 @@ function calcHeight(elem) {
 	return parseFloat(elem.css('height').replace(/px$/, ''));
 }
 
-var css = [
-	'.itemdiv {',
-	'	max-width: 100%;',
-	'	float: left;',
-	'	overflow-x: hidden;',
-	'}',
-	'.enterdiv {',
-	'	display: none;',
-	'	float: right;',
-	'	margin-left: auto;',
-	'	padding-left: 0.2em;',
-	'	padding-right: 0.3em;',
-	'	background: inherit;',
-	'}',
-	'li {',
-	'	display: block;',
-	'	display: flex;',
-	'	cursor: default;',
-	'}',
-	'li:focus:hover {',
-	'	cursor: pointer;',
-	'}',
-	'li:focus .enterdiv {',
-	'	display: block;',
-	'}',
-].join("\n");
-
 module.exports= listbase.extend({
 
 	_initialize: function(options) {
@@ -47,9 +20,7 @@ module.exports= listbase.extend({
 			this.$el.css('overflow-y', 'scroll');
 		if (options && !options.itemHtml)
 			this.itemHtml = this._browserItemHtml;
-		// should probably do something like
-		// this.addStyleSheet(css);
-		this.stylesheet = css;
+		this.$el.addClass('app-listbox-browser');
 		this.$el.focus();
 	},
 
