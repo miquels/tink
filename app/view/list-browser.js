@@ -20,7 +20,7 @@ module.exports= listbase.extend({
 			this.$el.css('overflow-y', 'scroll');
 		if (options && !options.itemHtml)
 			this.itemHtml = this._browserItemHtml;
-		this.$el.addClass('app-listbox-browser');
+		this.$el.addClass('app-listview-browser');
 		this.$el.focus();
 	},
 
