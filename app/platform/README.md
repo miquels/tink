@@ -12,6 +12,10 @@ New platforms can be added here.
 
 Some pointers to documentation and other code:
 
+- SmartTV universal library for Samsung, LG, Philips, STB...  
+  https://github.com/immosmart/smartbox  
+  https://github.com/immosmart/smartbox/tree/master/src/platforms
+
 - sample app, includes library that abstracts several TV brands:  
   https://github.com/BrightcoveOS/Samsung-Smart-TV-Sample-App/tree/master/js/Common/enginelite
 
@@ -23,7 +27,4 @@ Some pointers to documentation and other code:
 
 - BBCs TV Application Layer library:  
   https://github.com/fmtvp/tal
-
-- enyo framework:
-  http://enyojs.com/
 
