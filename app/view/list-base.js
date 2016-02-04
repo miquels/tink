@@ -24,8 +24,8 @@ module.exports = Backbone.View.extend({
 	initialize: function(options) {
 
 		console.log('ListviewBase initialize called');
-		this.listenTo(this.model, 'change:items change:focus',
-										this.model_change);
+		this.listenTo(this.model, 'change:items', this.model_change_items);
+		this.listenTo(this.model, 'change:focus', this.model_change_focus);
 
 		// copy options.
 		_.extend(this, _.pick(options, [ 'itemHtml' ]));
@@ -60,19 +60,20 @@ module.exports = Backbone.View.extend({
 		this.items(this.model.get('items'));
 	},
 
-	// model has changed.
-	model_change: function(model) {
-		// new items.
-		if (model.hasChanged('items')) {
-			this.items(model.get('items'));
-			return;
-		}
-		// focus change.
-		if (model.hasChanged('focus')) {
-			var name = model.get('focus') || '';
-			var id = this.findItemByName(name).did;
-			this._focusItemId(id);
-		}
+	// model.items has changed.
+	model_change_items: function(model) {
+		this.items(model.get('items'));
+	},
+
+	// model.focus has changed.
+	model_change_focus: function(model) {
+		var name = model.get('focus') || '';
+		if (this.focusedItem != null &&
+			this.focusedItem < this.itemArray.length &&
+			this.itemArray[this.focusedItem].name == name)
+				return;
+		var id = this.findItemByName(name).did;
+		this._focusItemId(id);
 	},
 
 	// walk up the tree to find the 'li' item and select it.
@@ -140,7 +141,7 @@ module.exports = Backbone.View.extend({
 		this.focusedItemId = id;
 
 		if (item.name) {
-			this.model.set('focus', item.name, { silent: true });
+			this.model.set('focus', item.name);
 			this.trigger('enter', item);
 		}
 	},
@@ -153,7 +154,7 @@ module.exports = Backbone.View.extend({
 		this.focusedItemId = id;
 
 		if (item.name) {
-			this.model.set('focus', item.name, { silent: true });
+			this.model.set('focus', item.name);
 			this.trigger('select', item);
 		}
 	},
