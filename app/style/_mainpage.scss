@@ -2,7 +2,7 @@
 	position: relative;
 	width: 100%;
 	height: calc(70% - 2em);
-	outline: 0;
+	outline: none;
 }
 
 .main-button {
@@ -20,7 +20,7 @@
 	width: 50%;
 	left: 25%;
 	bottom: 25%;
-	outline: 0;
+	outline: none;
 }
 
 .main-button img:focus {
