@@ -54,7 +54,9 @@ function runBundler(b, opts) {
 	// Add transformation tasks to the pipeline here.
 	.pipe(gulpif(opts.uglify, uglify()))
 
-    .pipe(gulpif(opts.maps, sourcemaps.write({ sourceRoot: '/' })))
+    .pipe(gulpif(opts.maps, sourcemaps.write('./', {
+		includeContent: opts.mapsIncludeContent,
+	})))
     .pipe(gulp.dest('./app/build'));
 }
 
@@ -62,14 +64,16 @@ gulp.task('js-app-once', function() {
 	var b = getAppBundler({});
 	return runBundler(b, {
 		maps: true,
-		outfile: 'app.js',
+		mapsIncludeContent: true,
+		outfile: 'app-bundle.js',
 	});
 });
 
 gulp.task('js-app-watch', function() {
 	var opts = {
-		outfile: 'app.js',
 		maps: true,
+		mapsIncludeContent: true,
+		outfile: 'app-bundle.js',
 	};
 	var b = watchify(getAppBundler(assign({}, watchify.args)));
 	b.on('update', function() { runBundler(b, opts); });
@@ -80,14 +84,18 @@ gulp.task('js-app-watch', function() {
 gulp.task('js-lib-once', function() {
 	var b = getLibBundler({});
 	return runBundler(b, {
-		outfile: 'libs.js',
+		maps: true,
+		mapsIncludeContent: false,
+		outfile: 'vendor-bundle.js',
 		uglify: true,
 	});
 });
 
 gulp.task('js-lib-watch', function() {
 	var opts = {
-		outfile: 'libs.js',
+		maps: true,
+		mapsIncludeContent: false,
+		outfile: 'vendor-bundle.js',
 		uglify: true,
 	};
 	var b = watchify(getLibBundler(assign({}, watchify.args)));
@@ -96,8 +104,13 @@ gulp.task('js-lib-watch', function() {
 	return runBundler(b, opts);
 });
 
+gulp.task('samsungtvcss', function() {
+  return gulp.src('app/style/samsungtv.css')
+	.pipe(gulp.dest('./app/build'));
+});
+
 gulp.task('sass', function() {
-  return gulp.src('app/scss/styles.scss')
+  return gulp.src('app/style/style.scss')
 	.pipe(sourcemaps.init())
 	.pipe(sass.sync().on('error', sass.logError))
 	.pipe(autoprefixer({
@@ -122,12 +135,13 @@ gulp.task('default', [
 	'js-app-once',
 	'js-lib-once',
 	'sass',
+	'samsungtvcss',
 	'material-design-icons',
 ]);
 
 gulp.task('scss-watch', function() {
 	var w = gulp.watch( [
-			'./app/scss/*.scss',
+			'./app/style/*.scss',
 			'./app/video/*.scss' ,
 			'./app/view/*.scss' ],
 		[ 'sass' ]
@@ -137,8 +151,18 @@ gulp.task('scss-watch', function() {
 	});
 });
 
+gulp.task('samsungtvcss-watch', function() {
+	var w = gulp.watch( [ './app/style/samsungtv.css' ],
+		[ 'samsungtvcss' ]
+	);
+	w.on('change', function(ev) {
+		console.log(ev.path + ' was ' + ev.type + ', running tasks...');
+	});
+});
+
 gulp.task('watch', function() {
-	runseq(	[ 'sass', 'js-lib-once', 'material-design-icons' ],
-			[ 'js-app-watch', 'scss-watch' ]);
+	//runseq(	[ 'sass', 'samsungtvcss', 'js-lib-once', 'material-design-icons' ],
+	runseq(	[ 'default' ],
+			[ 'js-app-watch', 'scss-watch', 'samsungtvcss-watch' ]);
 });
 

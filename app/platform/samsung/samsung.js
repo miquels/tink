@@ -30,6 +30,10 @@ var scriptList = [
 	'$MANAGER_WIDGET/Common/webapi/1.0/webapis.js',
 ];
 
+var cssList = [
+	'build/samsungtv.css'
+];
+
 // load objects and scripts.
 function loadPlugins() {
 	for (var id in pluginList) {
@@ -43,6 +47,13 @@ function loadPlugins() {
 		o.style.bottom = 0;
 		document.body.appendChild(o);
 		Plugin[id] = o;
+	}
+	for (var c in cssList) {
+		var l = document.createElement('link');
+		l.setAttribute('rel', 'stylesheet');
+		l.setAttribute('type', 'text/css');
+		l.setAttribute('href', cssList[c]);
+		document.body.appendChild(l);
 	}
 	for (var idx in scriptList) {
 		var s = document.createElement('script');
