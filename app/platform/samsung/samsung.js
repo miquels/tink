@@ -35,7 +35,8 @@ var cssList = [
 ];
 
 // load objects and scripts.
-function loadPlugins() {
+function samsungInit() {
+	// plugins
 	for (var id in pluginList) {
 		var o = document.createElement('object');
 		o.setAttribute('id', id);
@@ -48,6 +49,7 @@ function loadPlugins() {
 		document.body.appendChild(o);
 		Plugin[id] = o;
 	}
+	// css
 	for (var c in cssList) {
 		var l = document.createElement('link');
 		l.setAttribute('rel', 'stylesheet');
@@ -55,13 +57,13 @@ function loadPlugins() {
 		l.setAttribute('href', cssList[c]);
 		document.body.appendChild(l);
 	}
+	// scripts
 	for (var idx in scriptList) {
 		var s = document.createElement('script');
 		s.src = scriptList[idx];
 		document.body.appendChild(s);
 	}
 }
-loadPlugins();
 
 // window.onShow() is samsung specific, and runs after plugins are ready.
 function onShow() {
@@ -78,10 +80,35 @@ function onShow() {
 
 var samsung = {
 
+	disableConsole: function() {
+		// detect emulator by mac address.
+		if (samsung.macAddress.match(/^080027/))
+			return;
+
+		// detect jsconsole by missing functions.
+		if (!console.count && !console.trace && !console.markTimeline)
+			return;
+
+		// actual TV, disable console.
+		window.console = {
+			debug: function() { },
+			dir: function() { },
+			echo: function() { },
+			error: function() { },
+			info: function() { },
+			log: function() { },
+			time: function() { },
+			timeEnd: function() { },
+			warn: function() { }
+		};
+		window.alert = function() { };
+	},
+
 	// called by main() when everything has loaded.
 	ready: function() {
+		console.log('samsung.ready');
+
 		var Common = global.Common;
-		//console.log('samsung.ready', Common);
 		tvKey = new Common.API.TVKeyValue();
 		widgetAPI = new Common.API.Widget();
 		pluginAPI = new Common.API.Plugin();
@@ -92,6 +119,8 @@ var samsung = {
 		samsung.pluginAPI = pluginAPI;
 
 		window.onShow = onShow;
+
+		samsung.disableConsole();
 
 		// tell TV we're ready.
 		widgetAPI.sendReadyEvent();
@@ -129,6 +158,32 @@ var samsung = {
 
 	isFullScreen: function() {
 		return true;
+	},
+
+	get macAddress() {
+		return Plugin.pluginObjectNetwork.GetMAC();
+	},
+	get ipAddress() {
+		var network = Plugin.pluginObjectNetwork;
+		return network.GetIP(network.GetActiveType());  
+	},
+
+	// duid / modelcode / firmware / systemVersion / productCode
+	// no use for them yet, but you never know.
+	get duid() {
+		return Plugin.pluginObjectNNavi.GetDUID(samsung.macAddress);
+	},
+	get modelCode() {
+		return Plugin.pluginObjectNNAVI.GetModelCode();
+	},
+	get firmware() {
+		return Plugin.pluginObjectNNAVI.GetFirmware();
+	},
+	get systemVersion() {
+		return Plugin.pluginObjectNNAVI.GetSystemVersion(0);
+	},
+	get productCode() {
+		return Plugin.pluginObjectTV.GetProductCode(1);
 	},
 
 	// map key.
@@ -217,6 +272,7 @@ var samsung = {
 if (navigator.userAgent.match(/SmartHub/) &&
 	navigator.userAgent.match(/SmartTV/)) {
 	module.exports = samsung;
+	samsungInit();
 } else  {
 	module.exports = null;
 }
