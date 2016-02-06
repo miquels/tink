@@ -343,7 +343,8 @@ Video.prototype = {
 			this.timeInfo.text(hhmmss(do_hour, time) + ' / ' +
 						hhmmss(do_hour, duration));
 		}
-		this.subs.periodicUpdate();
+		if (this.subsOn)
+			this.subs.periodicUpdate();
 	},
 
 	setTime: function(time) {
@@ -354,7 +355,8 @@ Video.prototype = {
 			time = 0;
 		this.video.currentTime = time;
 		this.seekBar[0].value = (100 / duration) * time;
-		this.subs.periodicUpdate();
+		if (this.subsOn)
+			this.subs.periodicUpdate();
 	},
 
 	setTimePct: function(pct) {
