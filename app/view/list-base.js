@@ -67,11 +67,9 @@ module.exports = Backbone.View.extend({
 
 	// model.focus has changed.
 	model_change_focus: function(model) {
+		if (this.changeFocus)
+			return;
 		var name = model.get('focus') || '';
-		if (this.focusedItem != null &&
-			this.focusedItem < this.itemArray.length &&
-			this.itemArray[this.focusedItem].name == name)
-				return;
 		var id = this.findItemByName(name).did;
 		this._focusItemId(id);
 	},
@@ -141,7 +139,9 @@ module.exports = Backbone.View.extend({
 		this.focusedItemId = id;
 
 		if (item.name) {
+			this.changeFocus = true;
 			this.model.set('focus', item.name);
+			this.changeFocus = false;
 			this.trigger('enter', item);
 		}
 	},
@@ -154,7 +154,9 @@ module.exports = Backbone.View.extend({
 		this.focusedItemId = id;
 
 		if (item.name) {
+			this.changeFocus = true;
 			this.model.set('focus', item.name);
+			this.changeFocus = false;
 			this.trigger('select', item);
 		}
 	},
