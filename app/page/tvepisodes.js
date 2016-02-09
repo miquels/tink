@@ -28,7 +28,10 @@ module.exports = tvlist.extend({
 		var focus = this.loadFocus('tvshows', this.tvshow, this.season);
 		var ep = this.episode ? this.episode : focus;
 
-		this.tvShows.getseason(this.tvshow, this.season, true)
+		this.tvShows.getshow({
+			show: this.tvshow,
+			season: this.season,
+			deep: true })
 		.done(function(show) {
 			var m = {
 				items: show.seasons[this.season].episodes,
@@ -55,7 +58,10 @@ module.exports = tvlist.extend({
 	// select a different episode
 	select: function(ep) {
 		var name = _.isObject(ep) ? ep.name : ep;
-		this.tvShows.getepisode(this.tvshow, this.season, name)
+		this.tvShows.getshow({
+			show: this.tvshow,
+			season: this.season,
+			episode: name})
 		.done(function(show) {
 			this.saveFocus('tvshows', this.tvshow, this.season);
 			this.setModel(show, {}, 'episode');
@@ -69,7 +75,10 @@ module.exports = tvlist.extend({
 	// play episode
 	enter: function(ep) {
 		console.log('tvepisodes.enter', ep.name);
-		this.tvShows.getepisode(this.tvshow, this.season, ep)
+		this.tvShows.getshow({
+			show: this.tvshow,
+			season: this.season,
+			episode: ep })
 		.done(function(show) {
 			Page.switchPage('videoplayer', {
 				url: Util.joinpath(show.path, show.season.path, ep.path, ep.video),

@@ -410,78 +410,37 @@ KodiFS.prototype = {
 		return r;
 	},
 
-	// Get the info for one show. If 'deep' is set, recurse
-	// into the season subdirectories.
-	getshow: function(showname, deep) {
-		return this.getOneShow(showname)
-				.then(function(show) {
-					// shallow request?
-					//console.log('this.url', this.url, 'show.path', show.path);
-					if (!deep || Object.keys(show.seasons).lenght == 0)
-						return $.extend({}, show, {
-							path: this.url + show.path,
-						});
+	// Get the info for one show.
+	getshow: function(args) {
+		return this.getOneShow(args.show)
+		.then(function(show) {
 
-					// right we also want _all_ the seasons and episodes!
-					var s = [];
-					for (var sn in show.seasons) {
-						var seasonname = show.seasons[sn].name;
-						s.push(this.getSeasonEpisodes(showname, seasonname));
-					}
+			// make sure at least one deferred is present.
+			var defers = [ $.Deferred().resolve() ];
 
-					// wait for all of them to resolve or fail.
-					return $.when.apply($, s)
-							.then(function() {
-								return $.extend({}, show, {
-									path: this.url + show.path,
-								});
-							}.bind(this));
-				}.bind(this));
-	},
+			// get season info as well ?
+			if (Object.keys(show.seasons).length > 0 &&
+				(args.deep || args.episode)) {
 
-	// Get the info for one season. If 'deep' is set, recurse
-	// into the season subdirectories (with the episodes).
-	//
-	// Returns a 'show' object that also has a 'season'
-	// reference to the requested season.
-	getseason: function(showname, seasonname, deep) {
+				for (var sn in show.seasons) {
+					var sname = show.seasons[sn].name;
+					if (!args.season || args.season == sname)
+						defers.push(this.getSeasonEpisodes(args.show, sname));
+				}
+			}
 
-		// shallow request?
-		if (this.shows[showname] &&
-			this.shows[showname].seasons[seasonname] && !deep) {
-				return $.Deferred().resolve(
-					$.extend({}, this.shows[showname], {
-						path: this.url + this.shows[showname].path,
-						season: this.shows[showname].seasons[seasonname],
-					})
-				);
-		}
-
-		// nope get the whole season.
-		return this.getSeasonEpisodes(showname, seasonname)
-				.then(function(show) {
-					//console.log(show);
-					return $.extend({}, show, {
-						path: this.url + show.path,
-						season: show.seasons[seasonname],
-					});
-				}.bind(this));
-	},
-
-	// Returns a 'show' object that also has a 'season'
-	// reference and an 'episode' reference.
-	getepisode: function(showname, seasonname, epname) {
-		return this.getSeasonEpisodes(showname, seasonname)
-				.then(function(show) {
-					//console.log('getep returning');
-					var e = epname ?
-						show.seasons[seasonname].episodes[epname] : null;
-					return $.extend({}, show, {
-						path: this.url + show.path,
-						season: show.seasons[seasonname],
-						episode: e,
-					});
-				}.bind(this));
+			// wait for all of them to resolve or fail.
+			return $.when.apply($, defers)
+			.then(function() {
+				var s = args.season ? show.seasons[args.season] : null;
+				var e = args.episode && s ? s.episodes[args.episode] : null;
+				return $.extend({}, show, {
+					path: this.url + show.path,
+					season: s,
+					episode: e,
+				});
+			}.bind(this));
+		}.bind(this));
 	},
 
 	// Get gets the info for one movie.

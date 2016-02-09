@@ -24,7 +24,7 @@ module.exports = tvlist.extend({
 		var focus = this.loadFocus('tvshows', this.tvshow);
 		var se = this.season ? this.season : focus;
 
-		this.tvShows.getshow(this.tvshow)
+		this.tvShows.getshow( { show: this.tvshow })
 		.done(function(show) {
 			var m = {
 				items: show.seasons,
@@ -53,7 +53,7 @@ module.exports = tvlist.extend({
 		var name = _.isObject(season) ? season.name : season;
 		console.log('tvseasons.select', name);
 
-		this.tvShows.getseason(this.tvshow, name)
+		this.tvShows.getshow({ show: this.tvshow, season: name })
 		.done(function(show) {
 			this.saveFocus('tvshows', this.tvshow);
 			this.setModel(show, {}, 'season');

@@ -54,7 +54,7 @@ module.exports = tvlist.extend({
 	select: function(show) {
 		var name = _.isObject(show) ? show.name : show;
 		console.log('tvshows.select', name);
-		this.tvShows.getshow(name, false)
+		this.tvShows.getshow({ show: name })
 		.fail(function(jqXHR, textStatus) {
 			console.log("tvshows.select: failed to load",
 											name, textStatus);
