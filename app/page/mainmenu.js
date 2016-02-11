@@ -48,9 +48,11 @@ module.exports = Backbone.View.extend({
 			switch(m.type) {
 				case 'tvshows':
 					this.tvshowsurl = m.url;
+					this.tvshowsproto = m.proto;
 					break;
 				case 'movies':
 					this.moviesurl = m.url;
+					this.moviesproto = m.proto;
 					break;
 			}
 		}
@@ -128,6 +130,7 @@ module.exports = Backbone.View.extend({
 				if (this.moviesurl) {
 					Page.switchPage('movies', {
 						url:	this.moviesurl,
+						proto:	this.moviesproto,
 					});
 				}
 				break;
@@ -137,6 +140,7 @@ module.exports = Backbone.View.extend({
 				if (this.tvshowsurl) {
 					Page.switchPage('tvshows', {
 						url:	this.tvshowsurl,
+						proto:	this.tvshowsproto,
 					});
 				}
 				break;

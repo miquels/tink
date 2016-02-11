@@ -25,13 +25,12 @@ var $		= require('jquery'),
 	Webdav	= require('./webdav.js');
 
 function KodiFS(opts) {
-	_.extend(this, _.pick(opts, [ 'url' ]));
+	_.extend(this, _.pick(opts, [ 'url', 'proto' ]));
 	if (this.url.match(/^(web|)davs?:/)) {
-		this.dirIndex = Webdav;
+		this.proto = 'webdav';
 		this.url = this.url.replace(/^(web|)dav/, "http");
-	} else {
-		this.dirIndex = Http;
 	}
+	this.dirIndex = (this.proto == 'webdav') ? Webdav : Http;
 };
 module.exports = KodiFS;
 
@@ -432,13 +431,19 @@ KodiFS.prototype = {
 			// wait for all of them to resolve or fail.
 			return $.when.apply($, defers)
 			.then(function() {
-				var s = args.season ? show.seasons[args.season] : null;
-				var e = args.episode && s ? s.episodes[args.episode] : null;
-				return $.extend({}, show, {
-					path: this.url + show.path,
-					season: s,
-					episode: e,
-				});
+				// set 'season' shortcut.
+				if (args.season) {
+					var s = show.seasons[args.season];
+					// if changed, reset episode.
+					if (!show.season || !s || (show.season.name != s.name))
+						show.episode = null;
+					show.season = s;
+				}
+				// set 'episode' shortcut.
+				if (args.episode && show.season) {
+					show.episode = show.season.episodes[args.episode];
+				}
+				return show;
 			}.bind(this));
 		}.bind(this));
 	},
@@ -455,11 +460,8 @@ KodiFS.prototype = {
 				return $.Deferred().reject();
 			}
 			if (movie.video) {
-				var url = this.url + movie.path;
 				console.log("kodifs.getmovie: returning cached " + moviename);
-				return $.Deferred().resolve($.extend({}, movie, {
-					path: url,
-				}));
+				return $.Deferred().resolve(movie);
 			}
 
 			console.log("kodifs.getmovie: requesting " +
@@ -468,10 +470,7 @@ KodiFS.prototype = {
 			var wd = new this.dirIndex();
 			var dfd = wd.listdir(url)
 			  .then(function(data) {
-				var m = buildmovie(movie, data);
-				return $.extend({}, m, {
-						path: url,
-				});
+				return buildmovie(movie, data);
 			});
 			return dfd;
 		}.bind(this));

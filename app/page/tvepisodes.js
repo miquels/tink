@@ -80,8 +80,12 @@ module.exports = tvlist.extend({
 			season: this.season,
 			episode: ep })
 		.done(function(show) {
+			var url = Util.joinpath(
+				this.url, show.path,
+				show.season.path, ep.path, ep.video
+			);
 			Page.switchPage('videoplayer', {
-				url: Util.joinpath(show.path, show.season.path, ep.path, ep.video),
+				url: url,
 				backPage: 'tvepisodes',
 				backOptions: {
 					url: this.url,

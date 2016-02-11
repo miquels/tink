@@ -4,13 +4,15 @@
 			"name": "TV Series",
 			"tag": "demo",
 			"type": "tvshows",
-			"url": "http://demo.example.net/data/tv-series/"
+			"url": "http://demo.example.net/data/tv-series/",
+			"proto": "http"
 		},
 		{
 			"name": "Movies",
 			"tag": "demo",
 			"type": "movies",
-			"url": "dav://demo.example.net/data/movies/"
+			"url": "http://demo.example.net/data/movies/",
+			"proto": "webdav"
 		}
 	]
 }

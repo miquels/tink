@@ -38,7 +38,7 @@ module.exports = Backbone.View.extend({
 		console.log('tvlist.initialize called');
 
 		_.extend(this, _.pick(options,
-			[ 'url', 'movie', 'tvshow', 'season', 'episode' ]));
+			[ 'url', 'proto', 'movie', 'tvshow', 'season', 'episode' ]));
 
 		// the tvlist model (main UI)
 		this.model = new tvlistmodel();
@@ -62,11 +62,11 @@ module.exports = Backbone.View.extend({
 		// XXX FIXME movies and tvshows are too tangled up right now.
 		if (this.viewname == 'movies') {
 			if (moviesFS == null)
-				moviesFS = new KodiFS({ url: this.url });
+				moviesFS = new KodiFS({ url: this.url, proto: this.proto });
 			this.movies = moviesFS;
 		} else {
 			if (tvshowsFS == null)
-				tvshowsFS = new KodiFS({ url: this.url });
+				tvshowsFS = new KodiFS({ url: this.url, proto: this.proto });
 			this.tvShows = tvshowsFS;
 		}
 
@@ -113,7 +113,7 @@ module.exports = Backbone.View.extend({
 		// set	show:poster		URL to show poster
 		//		season:poster	URL to season poster
 		// etc.
-		var url = '';
+		var url = this.url;
 		var ctxlist = [ 'show', 'season', 'episode' ];
 		if (curctx == 'movie')
 			ctxlist = [ 'movie' ];

@@ -76,7 +76,7 @@ module.exports = tvlist.extend({
 		this.movies.getmovie(name)
 		.done(function(movie) {
 			Page.switchPage('videoplayer', {
-				url: Util.joinpath(movie.path, movie.video),
+				url: Util.joinpath(this.movies.url, movie.path, movie.video),
 				backPage: 'movies',
 				backOptions: {
 					url: this.url,
