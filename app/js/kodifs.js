@@ -334,8 +334,13 @@ KodiFS.prototype = {
 		return dfd;
 	},
 
-	getshows: function() {
-		return this.dirlist('shows');
+	getshows: function(args) {
+		return this.dirlist('shows')
+		.then(function(shows) {
+			if (args && args.show)
+				shows.show = shows[args.show];
+			return shows;
+		});
 	},
 
 	getmovies: function() {
