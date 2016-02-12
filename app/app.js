@@ -1,6 +1,8 @@
 
 'use strict';
 
+/* es6 polyfill*/ require('babel-polyfill');
+
 var $			= require('jquery');
 
 var	Page		= require('./js/page.js'),
