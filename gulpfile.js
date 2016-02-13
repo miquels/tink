@@ -30,7 +30,7 @@ function getAppBundler(opts) {
 	return new browserify(opts)
 		.transform(babelify, {
 			presets: ["es2015"],
-			plugins: ["transform-class-properties"]
+			plugins: ["transform-class-properties", "add-module-exports"]
 		});
 }
 

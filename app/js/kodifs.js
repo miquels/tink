@@ -19,20 +19,10 @@
  *
  */
 
-var $		= require('jquery'),
-	_		= require('underscore'),
-	Http	= require('./http.js'),
-	Webdav	= require('./webdav.js');
-
-function KodiFS(opts) {
-	_.extend(this, _.pick(opts, [ 'url', 'proto' ]));
-	if (this.url.match(/^(web|)davs?:/)) {
-		this.proto = 'webdav';
-		this.url = this.url.replace(/^(web|)dav/, "http");
-	}
-	this.dirIndex = (this.proto == 'webdav') ? Webdav : Http;
-};
-module.exports = KodiFS;
+import  $		from 'jquery';
+import  _		from 'underscore';
+import  Http	from './http.js';
+import  Webdav	from './webdav.js';
 
 // helper: decode season / episode from filename.
 function decodeShowName(e) {
@@ -306,16 +296,25 @@ function buildseason(season, data) {
 	return season;
 }
 
-KodiFS.prototype = {
-	constructor: KodiFS,
+export default class KodiFS {
 
-	url: null,
-	name: "",
-	path: '',
-	items: null,
+	url = null;
+	name = "";
+	path = '';
+	items = null;
+
+	constructor(opts) {
+		console.log('constructor called opts is ', opts);
+		_.extend(this, _.pick(opts, [ 'url', 'proto' ]));
+		if (this.url.match(/^(web|)davs?:/)) {
+			this.proto = 'webdav';
+			this.url = this.url.replace(/^(web|)dav/, "http");
+		}
+		this.dirIndex = (this.proto == 'webdav') ? Webdav : Http;
+	};
 
 	// Get a directory listing of tvshows / movies.
-	dirlist: function(type) {
+	dirlist(type) {
 
 		if (this.items != null) {
 			console.log("kodifs.dirlist: returning cached " + type);
@@ -332,28 +331,28 @@ KodiFS.prototype = {
 		});
 
 		return dfd;
-	},
+	};
 
-	getshows: function(args) {
+	getshows(args) {
 		return this.dirlist('shows')
 		.then(function(shows) {
 			if (args && args.show)
 				shows.show = shows[args.show];
 			return shows;
 		});
-	},
+	};
 
-	getmovies: function(args) {
+	getmovies(args) {
 		return this.dirlist('movies')
 		.then(function(movies) {
 			if (args && args.movie)
 				movies.movie = movies[args.movie];
 			return movies;
 		});
-	},
+	};
 
 	// Get gets the basic info for one tvshow.
-	getOneShow: function(showname) {
+	getOneShow(showname) {
 
 		var r = this.getshows().then(function(shows) {
 
@@ -381,10 +380,10 @@ KodiFS.prototype = {
 		}.bind(this));
 
 		return r;
-	},
+	};
 
 	// Gets all the episodes in one season.
-	getSeasonEpisodes: function(showname, seasonname) {
+	getSeasonEpisodes (showname, seasonname) {
 
 		var r = this.getOneShow(showname).then(function(show) {
 
@@ -417,10 +416,10 @@ KodiFS.prototype = {
 		}.bind(this));
 
 		return r;
-	},
+	};
 
 	// Get the info for one show.
-	getshow: function(args) {
+	getshow (args) {
 		return this.getOneShow(args.show)
 		.then(function(show) {
 
@@ -458,10 +457,10 @@ KodiFS.prototype = {
 				return show;
 			}.bind(this));
 		}.bind(this));
-	},
+	};
 
 	// Get gets the info for one movie.
-	getmovie: function(moviename) {
+	getmovie (moviename) {
 
 		var r = this.getmovies().then((movies) => {
 
@@ -490,6 +489,6 @@ KodiFS.prototype = {
 		});
 
 		return r;
-	},
+	};
 };
 
