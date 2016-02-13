@@ -71,7 +71,7 @@ module.exports = Backbone.View.extend({
 			return;
 		var name = model.get('focus') || '';
 		var id = this.findItemByName(name).did;
-		this._focusItemId(id);
+		this._focusItemId(id)
 	},
 
 	// walk up the tree to find the 'li' item and select it.
@@ -363,8 +363,11 @@ module.exports = Backbone.View.extend({
 	findItemByName: function(name) {
 		name = name.toLowerCase().replace(/^the[ 	]+/, '');
 		for (var i in this.itemArray) {
+			// XXX FIXME: seasons have no special 'sortName' so are
+			// not lowercased. This is a quick hack/fix.
 			//console.log('compare', this.itemArray[i].sortName, name);
-			if (this.itemArray[i].sortName.localeCompare(name) >= 0)
+			var itemName = this.itemArray[i].sortName.toLowerCase();
+			if (itemName.localeCompare(name) >= 0)
 				return this.itemArray[i];
 		}
 		return this.itemArray[0];
