@@ -44,7 +44,7 @@ var Views = {
 function navButtons() {
 	$(".nav-fullscreen").click(function() {
 		var body = $("body");
-		Util.setFullScreen(body[0], !isFullScreen());
+		Util.setFullScreen(body[0], !Util.isFullScreen());
 	});
 	$(".nav-back").click(function() {
 		Page.backPage();
