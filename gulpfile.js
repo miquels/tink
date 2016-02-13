@@ -28,7 +28,10 @@ function getAppBundler(opts) {
 		bundleExternal: false,
 	});
 	return new browserify(opts)
-		.transform(babelify, {presets: ["es2015"]});
+		.transform(babelify, {
+			presets: ["es2015"],
+			plugins: ["transform-class-properties"]
+		});
 }
 
 // library bundler.
