@@ -4,6 +4,7 @@
 /* es6 polyfill*/ require('babel-polyfill');
 
 var $			= require('jquery');
+var Backbone	= require('backbone');
 
 var	Page		= require('./js/page.js'),
 	Util		= require('./js/util.js'),
@@ -21,6 +22,9 @@ var Nfo			= require('./view/nfo.js'),
 	Image		= require('./view/image.js');
 
 var	Platform	= require('./platform/platform.js');
+
+// set backbone jquery version (ours).
+Backbone.$ = $;
 
 // mapping from div-ids to pages for Page.switchPage();
 var Pages = {
