@@ -20,22 +20,20 @@
  *  TODO: merge this with nfotemplateview somehow.
  */
 
-var Backbone	= require('backbone'),
-	_			= require('underscore'),
-	$			= require('jquery');
-	Backbone.$	= $;
+import Backbone from 'backbone';
+import _		from 'underscore';
 
-module.exports = Backbone.View.extend({
+export default class NFO extends Backbone.View {
 
-	initialize: function(options) {
-
-		console.log('Nfo.initialize called');
+	constructor(options) {
+		console.log('Nfo.constructor called');
+		super(options);
 		this.listenTo(this.model, 'change', this.change);
 		this.listenTo(this.model, 'reset', this.render);
 		this.render();
-	},
+	};
 
-	render: function(options) {
+	render(options) {
 		//console.log("Nfo.render");
 		var self = this;
 		this.$el.find("[data-key]").each(function() {
@@ -43,9 +41,9 @@ module.exports = Backbone.View.extend({
 		});
 		if (this.$el.data('key'))
 			this.renderOne(this.$el);
-	},
+	};
 
-	renderOne: function(el) {
+	renderOne(el) {
 		//console.log('Nfo.renderOne checking', nfo, key);
 		var json, key;
 		var keys = el.data('key').split(/[ \t]+/);
@@ -66,14 +64,14 @@ module.exports = Backbone.View.extend({
 		if (el.data('hashtml') == 0)
 			el.html(_.escape(json[key]));
 		el.show();
-	},
+	};
 
-	change: function(model) {
+	change(model) {
 		if (_.find(_.keys(model.changed, function(key) {
 			return key.match(/nfoJSON/);
 		})))
 			this.render();
-	},
-});
+	};
+};
 
 // vim: tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab
