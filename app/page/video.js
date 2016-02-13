@@ -16,7 +16,6 @@ module.exports = Backbone.View.extend({
 
 	initialize: function(options) {
 		console.log('videoplayer.initialize', options);
-		_.extend(this, _.pick(options, [ 'backPage', 'backOptions' ]));
 		this.vd = new Video({
 			el:		this.$el,
 			stop:	this.goBack.bind(this),
@@ -30,6 +29,7 @@ module.exports = Backbone.View.extend({
 
 	show: function(options) {
 		console.log('videoplayer.show');
+		_.extend(this, _.pick(options, [ 'backPage', 'backOptions' ]));
 		this.$el.show();
 		var subs = null;
 		var url = Util.cleanURL(options.url, false, 'page/video');

@@ -23,36 +23,22 @@ module.exports = tvlist.extend({
 
 		console.log('tvepisodes.show', options);
 		this.$el.show();
-		_.extend(this, _.pick(options, [ 'tvshow', 'season', 'episode' ]));
-
-		var focus = this.loadFocus('tvshows', this.tvshow, this.season);
-		var ep = this.episode ? this.episode : focus;
+		_.extend(this, _.pick(options, [ 'tvshow', 'season' ]));
 
 		this.tvShows.getshow({
 			show: this.tvshow,
 			season: this.season,
+			episode: options.episode,
 			deep: true })
-		.done(function(show) {
-			var m = {
-				items: show.seasons[this.season].episodes,
-				focus: ep,
-			};
-			this.model.set('focus', null, { silent: true });
-			this.setModel(show, m, 'episode');
-			// XXX bah. bah. bah.
-			if (this.tvList.itemArray.length > 0) {
-				this.select(ep ? ep : this.tvList.itemArray[0]);
-			}
-		}.bind(this))
-		.fail(function(jqXHR, textStatus) {
+		.done((show) => {
+			this.model.set({ items: show.season.episodes, focus: null });
+			var e = show.episode ? show.episode : this.tvList.itemArray[0];
+			this.select(e);
+		})
+		.fail((jqXHR, textStatus) => {
 			console.log("TVSeasons.show: failed to load",
 										this.url, textStatus);
 		});
-	},
-
-	hide: function() {
-		this.$el.hide();
-		//this.setModel({}, {}, 'episode');
 	},
 
 	// select a different episode
@@ -62,11 +48,11 @@ module.exports = tvlist.extend({
 			show: this.tvshow,
 			season: this.season,
 			episode: name})
-		.done(function(show) {
-			this.saveFocus('tvshows', this.tvshow, this.season);
-			this.setModel(show, {}, 'episode');
-		}.bind(this))
-		.fail(function(jqXHR, textStatus) {
+		.done((show) => {
+			console.log('XXX focus[', name, '[');
+			this.setModel(show, { focus: name }, 'episode');
+		})
+		.fail((jqXHR, textStatus) => {
 			console.log("tvepisodes.select: failed to load",
 											name, textStatus);
 		});
@@ -79,7 +65,7 @@ module.exports = tvlist.extend({
 			show: this.tvshow,
 			season: this.season,
 			episode: ep })
-		.done(function(show) {
+		.done((show) => {
 			var url = Util.joinpath(
 				this.url, show.path,
 				show.season.path, ep.path, ep.video
@@ -95,8 +81,8 @@ module.exports = tvlist.extend({
 				},
 				subtitles: ep.subs,
 			});
-		}.bind(this))
-		.fail(function(jqXHR, textStatus) {
+		})
+		.fail((jqXHR, textStatus) => {
 			console.log("tvepisodes.enter: failed to load",
 											ep.name, textStatus);
 		});

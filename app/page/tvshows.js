@@ -25,15 +25,11 @@ module.exports = tvlist.extend({
 		// load the data.
 		this.tvShows.getshows({ show: this.tvshow })
 		.done((shows) => {
-			var s = shows.show ? shows.show : { name: '' };
-			var m = {
-				items: shows,
-				focus: s.name,
-			};
-			this.model.set('focus', null, { silent: true });
-			this.setModel(s, m, 'show');
+			this.model.set({ items: shows, focus: null });
+			var s = shows.show ? shows.show : this.tvList.itemArray[0];
+			this.select(s);
 		})
-		.fail(function(jqXHR, textStatus) {
+		.fail((jqXHR, textStatus) => {
 			console.log("tvshows.initialize: failed to load",
 											this.url, textStatus);
 		});
@@ -48,7 +44,7 @@ module.exports = tvlist.extend({
 			console.log("tvshows.select: failed to load", name, textStatus);
 		})
 		.done((show) => {
-			this.setModel(show, {}, 'show');
+			this.setModel(show, { focus: name }, 'show');
 		});
 	},
 

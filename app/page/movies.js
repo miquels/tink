@@ -26,32 +26,17 @@ module.exports = tvlist.extend({
 		this.$el.show();
 		_.extend(this, _.pick(options, [ 'movies' ]));
 
-		var focus = this.loadFocus('movies', this.movie);
-		var sh = this.movie ? this.movie : focus;
-
 		// load the data.
-		this.movies.getmovies()
-		.done(function(movies) {
-			var m = {
-				items: movies,
-				focus: sh,
-			};
-			this.model.set('focus', null, { silent: true });
-			this.setModel({ name: '' }, m, 'movie');
-			// XXX bah. bah. bah.
-			if (this.tvList.itemArray.length > 0) {
-				this.select(sh ? sh : this.tvList.itemArray[0]);
-			}
-		}.bind(this))
-		.fail(function(jqXHR, textStatus) {
+		this.movies.getmovies({ movie: options.movie })
+		.done((movies) => {
+			this.model.set({ items: movies, focus: null });
+			var mv = movies.movie ? movies.movie : this.tvList.itemArray[0];
+			this.select(mv);
+		})
+		.fail((jqXHR, textStatus) => {
 			console.log("movies.show: failed to load",
 											this.url, textStatus);
 		});
-	},
-
-	hide: function() {
-		this.$el.hide();
-		//this.setModel({}, {}, 'tvshows');
 	},
 
 	// select a different movie
@@ -59,14 +44,13 @@ module.exports = tvlist.extend({
 		var name = _.isObject(movie) ? movie.name : movie;
 		//console.log('movies.select', name);
 		this.movies.getmovie(name)
-		.fail(function(jqXHR, textStatus) {
+		.fail((jqXHR, textStatus) => {
 			console.log("movies.select: failed to load",
 											name, textStatus);
 		})
-		.done(function(movie) {
-			this.saveFocus('movies');
-			this.setModel(movie, {}, 'movie');
-		}.bind(this));
+		.done((movie) => {
+			this.setModel(movie, { focus: name }, 'movie');
+		})
 	},
 
 	// play movie
@@ -74,7 +58,7 @@ module.exports = tvlist.extend({
 		var name = _.isObject(movie) ? movie.name : movie;
 		console.log('movies.enter', name, movie);
 		this.movies.getmovie(name)
-		.done(function(movie) {
+		.done((movie) => {
 			Page.switchPage('videoplayer', {
 				url: Util.joinpath(this.movies.url, movie.path, movie.video),
 				backPage: 'movies',
@@ -84,8 +68,8 @@ module.exports = tvlist.extend({
 				},
 				subtitles: movie.subs,
 			});
-		}.bind(this))
-		.fail(function(jqXHR, textStatus) {
+		})
+		.fail((jqXHR, textStatus) => {
 			console.log("movies.enter: failed to load",
 											name, textStatus);
 		});

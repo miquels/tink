@@ -229,8 +229,10 @@ module.exports = Backbone.View.extend({
 	// choose item 0-9 a-z
 	_keyAlpha: function(keyCode) {
 		var item = this.findItemByName(String.fromCharCode(keyCode));
-		if (item)
+		if (item) {
+			this._focusItemId(item.did);
 			this._select(item.did);
+		}
 	},
 
 	// select next item

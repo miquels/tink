@@ -312,24 +312,24 @@ KodiFS.prototype = {
 	url: null,
 	name: "",
 	path: '',
-	shows: null,
+	items: null,
 
 	// Get a directory listing of tvshows / movies.
 	dirlist: function(type) {
 
-		if (this[type] != null) {
+		if (this.items != null) {
 			console.log("kodifs.dirlist: returning cached " + type);
-			return $.Deferred().resolve(this[type]);
+			return $.Deferred().resolve(this.items);
 		}
 
 		console.log("kodifs.dirlist: requesting " + type + " from server");
 		var wd = new this.dirIndex();
 		var dfd = wd.listdir(this.url)
-		  .then(function(data) {
+		  .then((data) => {
 			//console.log("got it calling builddirlist", this.url, data);
-			this[type] = {};
-			return builddirlist(this, this[type], data);
-		}.bind(this));
+			this.items = {};
+			return builddirlist(this, this.items, data);
+		});
 
 		return dfd;
 	},
@@ -343,8 +343,13 @@ KodiFS.prototype = {
 		});
 	},
 
-	getmovies: function() {
-		return this.dirlist('movies');
+	getmovies: function(args) {
+		return this.dirlist('movies')
+		.then(function(movies) {
+			if (args && args.movie)
+				movies.movie = movies[args.movie];
+			return movies;
+		});
 	},
 
 	// Get gets the basic info for one tvshow.
@@ -436,6 +441,8 @@ KodiFS.prototype = {
 			// wait for all of them to resolve or fail.
 			return $.when.apply($, defers)
 			.then(function() {
+				// set 'show' shortcut
+				this.items.show = show;
 				// set 'season' shortcut.
 				if (args.season) {
 					var s = show.seasons[args.season];
@@ -456,7 +463,7 @@ KodiFS.prototype = {
 	// Get gets the info for one movie.
 	getmovie: function(moviename) {
 
-		var r = this.getmovies().then(function(movies) {
+		var r = this.getmovies().then((movies) => {
 
 			var movie = movies[moviename];
 			if (!movie) {
@@ -474,11 +481,13 @@ KodiFS.prototype = {
 			var url = this.url + '/' + movie.path;
 			var wd = new this.dirIndex();
 			var dfd = wd.listdir(url)
-			  .then(function(data) {
-				return buildmovie(movie, data);
+			  .then((data) => {
+				var m = buildmovie(movie, data);
+				this.items.movie = m;
+				return m;
 			});
 			return dfd;
-		}.bind(this));
+		});
 
 		return r;
 	},

@@ -26,8 +26,6 @@ var	Backbone	= require('backbone'),
 	Util		= require('../js/util.js'),
 	NFO			= require('../js/nfo.js');
 
-var storeFocus = {};
-
 var tvshowsFS;
 var moviesFS;
 
@@ -71,24 +69,6 @@ module.exports = Backbone.View.extend({
 		}
 
 		this._initialize(options);
-	},
-
-	_fname: function(options) {
-		return '/' + _.without(options, null, undefined).join('/');
-	},
-
-	loadFocus: function() {
-		var a = Array.prototype.slice.call(arguments);
-		var f = storeFocus[this._fname(a)];
-		//console.log('tvList.loadFocus', a, this._fname(a), f);
-		return f;
-	},
-
-	saveFocus: function() {
-		var a = Array.prototype.slice.call(arguments);
-		var f = this.model.get('focus');
-		//console.log('tvList.saveFocus', a, this._fname(a), f);
-		storeFocus[this._fname(a)] = f;
 	},
 
 	// show the page.
@@ -170,7 +150,6 @@ module.exports = Backbone.View.extend({
 				if (i != 'items' && i != 'focus' && model[i] === undefined)
 					model[i] = null;
 		}
-		//console.log('setModel',_.extend(model, options));
 		this.model.set(_.extend(model, options));
 	},
 

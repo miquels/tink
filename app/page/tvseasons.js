@@ -19,33 +19,19 @@ module.exports = tvlist.extend({
 
 		console.log('tvseasons.show', options);
 		this.$el.show();
-		_.extend(this, _.pick(options, [ 'tvshow', 'season' ]));
+		_.extend(this, _.pick(options, [ 'tvshow' ]));
 
-		var focus = this.loadFocus('tvshows', this.tvshow);
-		var se = this.season ? this.season : focus;
-
-		this.tvShows.getshow( { show: this.tvshow })
-		.done(function(show) {
-			var m = {
-				items: show.seasons,
-				focus: se,
-			};
-			this.model.set('focus', null, { silent: true });
-			this.setModel(show, m, 'season');
-			// XXX bah. bah. bah.
-			if (this.tvList.itemArray.length > 0) {
-				this.select(se ? se : this.tvList.itemArray[0]);
-			}
-		}.bind(this))
-		.fail(function(jqXHR, textStatus) {
+		// load the data
+		this.tvShows.getshow({ show: this.tvshow, season: options.season })
+		.done((show) => {
+			this.model.set({ items: show.seasons, focus: null });
+			var s = show.season ? show.season : this.tvList.itemArray[0];
+			this.select(s.name);
+		})
+		.fail((jqXHR, textStatus) => {
 			console.log("tvseasons.show: failed to load",
 										this.url, textStatus);
 		});
-	},
-
-	hide: function() {
-		this.$el.hide();
-		//this.setModel({}, {}, 'season');
 	},
 
 	// select a different season
@@ -54,11 +40,10 @@ module.exports = tvlist.extend({
 		console.log('tvseasons.select', name);
 
 		this.tvShows.getshow({ show: this.tvshow, season: name })
-		.done(function(show) {
-			this.saveFocus('tvshows', this.tvshow);
-			this.setModel(show, {}, 'season');
-		}.bind(this))
-		.fail(function(jqXHR, textStatus) {
+		.done((show) => {
+			this.setModel(show, { focus: name }, 'season');
+		})
+		.fail((jqXHR, textStatus) => {
 			console.log("tvseasons.select: failed to load",
 											name, textStatus);
 		});
