@@ -424,7 +424,7 @@ Video.prototype = {
 			this.showControls();
 		this.subs.start();
 		this.video.play();
-		this.playButton.text('pause');
+		this.playButton.html('&#xE034;'); // pause
 		this.hideControls(controldelay);
 	},
 
