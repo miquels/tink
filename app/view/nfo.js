@@ -21,13 +21,14 @@
  */
 
 import Backbone from 'backbone';
+import $		from 'jquery';
 import _		from 'underscore';
 
 export default class NFO extends Backbone.View {
 
 	constructor(options) {
-		console.log('Nfo.constructor called');
 		super(options);
+		console.log('Nfo.constructor called');
 		this.listenTo(this.model, 'change', this.change);
 		this.listenTo(this.model, 'reset', this.render);
 		this.render();
