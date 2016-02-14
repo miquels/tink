@@ -3,27 +3,28 @@
  *
  */
 
-
-var Backbone	= require('backbone'),
-	_			= require('underscore'),
-	$			= require('jquery'),
-	Key			= require('../platform/keys.js');
+import Backbone	from 'backbone';
+import _		from 'underscore';
+import Key		from '../platform/keys.js';
 
 function isiOS() {
 	var ua = navigator.userAgent;
 	return ua.match(/iPad|iPhone|iPod/);
 }
 
-module.exports = Backbone.View.extend({
+export default class ListBase extends Backbone.View {
 
-	events: {
-		"keydown":	"_keyDown",
-		"keyup":	"_keyUp",
-	},
+	get events() {
+		return {
+			"keydown":	"_keyDown",
+			"keyup":	"_keyUp",
+		};
+	};
 
-	initialize: function(options) {
+	constructor(options) {
+		super(options);
+		console.log('ListBase constructor called');
 
-		console.log('ListviewBase initialize called');
 		this.listenTo(this.model, 'change:items', this.model_change_items);
 		this.listenTo(this.model, 'change:focus', this.model_change_focus);
 
@@ -44,10 +45,6 @@ module.exports = Backbone.View.extend({
 			this.$el.on('touchend', this._touchEnd.bind(this));
 		}
 
-		// initialize view.
-		if (this._initialize)
-			this._initialize(options);
-
 		// add css
 		this.$el.addClass('app-listview');
 
@@ -55,27 +52,24 @@ module.exports = Backbone.View.extend({
 		this.$el.css('tabindex', "0");
 		this.$el.css('outline', "0");
 		this.$el.focus();
-
-		// fill div with data.
-		this.items(this.model.get('items'));
-	},
+	};
 
 	// model.items has changed.
-	model_change_items: function(model) {
+	model_change_items(model) {
 		this.items(model.get('items'));
-	},
+	};
 
 	// model.focus has changed.
-	model_change_focus: function(model) {
+	model_change_focus(model) {
 		if (this.changeFocus)
 			return;
 		var name = model.get('focus') || '';
 		var id = this.findItemByName(name).did;
 		this._focusItemId(id)
-	},
+	};
 
 	// walk up the tree to find the 'li' item and select it.
-	_evSelect: function(ev) {
+	_evSelect(ev) {
 		var elem = ev.target;
 		while (elem != null && elem !== ev.currentTarget) {
 			if (elem.dataset.id !== undefined)
@@ -88,10 +82,10 @@ module.exports = Backbone.View.extend({
 			itemId: elem.dataset.id,
 			elem: elem,
 		};
-	},
+	};
 
 	// something was clicked on.
-	_click: function(ev) {
+	_click(ev) {
 		var what = this._evSelect(ev);
 
 		// check for doubleclick.
@@ -116,23 +110,23 @@ module.exports = Backbone.View.extend({
 			else
 				this._select(id);
 		}
-	},
+	};
 
 	// touchstart; remember position.
-	_touchStart: function(ev) {
+	_touchStart(ev) {
 		this.lastScrollTop = this.$el.scrollTop();
-	},
+	};
 
 	// touchend; if we scrolled, do nothing.
-	_touchEnd: function(ev) {
+	_touchEnd(ev) {
 		var st = this.$el.scrollTop();
 		if (Math.abs(st - this.lastScrollTop) > 4)
 			return;
 		this._click(ev);
-	},
+	};
 
 	// something was chosen: update focus and trigger 'enter' event.
-	_enter: function(id) {
+	_enter(id) {
 		if (id == null)
 			id = this.focusedItemId;
 		var item =  this.itemArray[id];
@@ -144,10 +138,10 @@ module.exports = Backbone.View.extend({
 			this.changeFocus = false;
 			this.trigger('enter', item);
 		}
-	},
+	};
 
 	// something was selected: update focus and trigger 'select' event.
-	_select: function(id) {
+	_select(id) {
 		if (id == null)
 			id = this.focusedItemId;
 		var item =  this.itemArray[id];
@@ -159,14 +153,14 @@ module.exports = Backbone.View.extend({
 			this.changeFocus = false;
 			this.trigger('select', item);
 		}
-	},
+	};
 
 	// back action chosen.
-	_back: function() {
+	_back() {
 		this.trigger('back');
-	},
+	};
 
-	_keyDown: function(ev) {
+	_keyDown(ev) {
 		console.log('XXX list-base keydown ' + ev.which);
 		var key = Key.map(ev);
 
@@ -208,11 +202,11 @@ module.exports = Backbone.View.extend({
 			ev.preventDefault();
 			return;
 		}
-	},
+	};
 
 	// some keys only take real action when they are released,
 	// this is so that keyboard repeat does the right thing.
-	_keyUp: function(ev) {
+	_keyUp(ev) {
 		//console.log('keyup', ev);
 		var key = Key.map(ev);
 		switch (key) {
@@ -224,35 +218,35 @@ module.exports = Backbone.View.extend({
 			case Key.FastForward:
 				this._select();
 		}
-	},
+	};
 
 	// choose item 0-9 a-z
-	_keyAlpha: function(keyCode) {
+	_keyAlpha(keyCode) {
 		var item = this.findItemByName(String.fromCharCode(keyCode));
 		if (item) {
 			this._focusItemId(item.did);
 			this._select(item.did);
 		}
-	},
+	};
 
 	// select next item
-	_arrowDown: function() {
+	_arrowDown() {
 		var id = this.focusedItemId + 1;
 		if (id >= this.itemArray.length)
 			id = 0;
 		this._focusItemId(id);
-	},
+	};
 
 	// select previous item
-	_arrowUp: function() {
+	_arrowUp() {
 		var id = this.focusedItemId - 1;
 		if (id < 0)
 			id = this.itemArray.length - 1;
 		this._focusItemId(id);
-	},
+	};
 
 	// go forward 1 letter in the alphabet
-	_pageDown: function() {
+	_pageDown() {
 		var l = this.itemArray[this.focusedItemId].sortName;
 		if (l == '')
 			return;
@@ -265,10 +259,10 @@ module.exports = Backbone.View.extend({
 		if (id == this.itemArray.length)
 			id = 0;
 		this._focusItemId(id);
-	},
+	};
 
 	// go back 1 letter in the alphabet
-	_pageUp: function() {
+	_pageUp() {
 		var l = this.itemArray[this.focusedItemId].sortName;
 		if (l == '')
 			return;
@@ -282,21 +276,21 @@ module.exports = Backbone.View.extend({
 			id = this.itemArray.length - 1;
 		id = this.findItemByName(this.itemArray[id].sortName[0]).did;
 		this._focusItemId(id);
-	},
+	};
 
 	// default implementation of itemHtml
-	itemHtml: function(item) {
+	itemHtml(item) {
 		return _.escape(item.name);
-	},
+	};
 
 	// generate <li> for one item
-	_itemHtml: function(item) {
+	_itemHtml(item) {
 		return '<li data-id="' + item.did + '" tabindex="-1">' +
 			this.itemHtml(item) + '</li>';
-	},
+	};
 
 	// initialize a new list of items.
-	items: function(items) {
+	items(items) {
 
 		// fake an empty entry if we have nothing else.
 		if (items == null || _.isEmpty(items)) {
@@ -347,20 +341,20 @@ module.exports = Backbone.View.extend({
 
 		// and render.
 		this._render();
-	},
+	};
 
 	// rerender one item
-	renderItem: function(name, options) {
+	renderItem(name, options) {
 		var item = this.itemMap[name];
 		if (item) {
 			var li = this.ul.find('[data-id="' + id + '"]');
 			if (li.length > 0)
 				li.html(this.itemHtml(item), options);
 		}
-	},
+	};
 
 	// find an item, or the nearest one alphabetically.
-	findItemByName: function(name) {
+	findItemByName(name) {
 		name = name.toLowerCase().replace(/^the[ 	]+/, '');
 		for (var i in this.itemArray) {
 			// XXX FIXME: seasons have no special 'sortName' so are
@@ -371,8 +365,7 @@ module.exports = Backbone.View.extend({
 				return this.itemArray[i];
 		}
 		return this.itemArray[0];
-	},
-
-});
+	};
+};
 
 // vim: tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab

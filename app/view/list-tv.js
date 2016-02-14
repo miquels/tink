@@ -5,16 +5,17 @@
  *	and little memory, so we need to do things differently.
  */
 
-var Backbone	= require('backbone'),
-	_			= require('underscore'),
-	$			= require('jquery');
+import Backbone	from 'backbone';
+import _		from  'underscore';
+import $		from 'jquery';
 
-var listbase = require('./list-base.js');
+import ListBase	from './list-base.js';
 
-module.exports = listbase.extend({
+export default class ListTV extends ListBase {
 
-	_initialize: function() {
-		console.log('ListviewTV._initialize');
+	constructor(opts) {
+		super(opts);
+		console.log('ListTV constructor called');
 
 		this.top = 0;
 
@@ -28,10 +29,11 @@ module.exports = listbase.extend({
 		//console.log('ListviewTV._initialize: itemsPP', this.itemsPP);
 
 		ul.remove();
-	},
+		this.items(this.model.get('items'));
+	};
 
 	// focus on one of the items.
-	_focusItemId: function(did) {
+	_focusItemId(did) {
 
 		this.focusedItemId = did;
 
@@ -42,10 +44,10 @@ module.exports = listbase.extend({
 
 		// focus
 		this.ul.find('[data-id=' + did + ']').focus();
-	},
+	};
 
 	// render the items that are in view.
-	_render: function() {
+	_render() {
 		//console.log('listviewTV._render start');
 
 		var focused = this.focusedItemId;
@@ -71,7 +73,7 @@ module.exports = listbase.extend({
 		this.ul.find('[data-id=' + focused + ']').focus();
 
 		return;
-	},
-});
+	};
+};
 
 // vim: tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab

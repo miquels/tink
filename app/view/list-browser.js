@@ -2,45 +2,44 @@
  *	Listview for normal browsers.
  */
 
-var Backbone	= require('backbone'),
-	_			= require('underscore'),
-	$			= require('jquery');
+import Backbone	from 'backbone';
+import _		from  'underscore';
+import $		from 'jquery';
 
-var listbase = require('./list-base.js');
+import ListBase	from './list-base.js';
 
-// we use box-sizing: border-box, so this is simple.
-function calcHeight(elem) {
-	return parseFloat(elem.css('height').replace(/px$/, ''));
-}
+export default class ListBrowser extends ListBase {
 
-module.exports= listbase.extend({
+	constructor(options) {
+		super(options);
 
-	_initialize: function(options) {
 		if (options && options.scrollbar)
 			this.$el.css('overflow-y', 'scroll');
 		if (options && !options.itemHtml)
 			this.itemHtml = this._browserItemHtml;
 		this.$el.addClass('app-listview-browser');
 		this.$el.focus();
-	},
+
+		this.items(this.model.get('items'));
+	};
 
 	// set focus to one of the elements.
-	_focusItemId: function(id) {
+	_focusItemId(id) {
 		this.focusedItemId = id;
 		var el = this.ul.find('[data-id=' + id + ']');
 		if (el.length == 0)
 			return;
 		el.focus();
-	},
+	};
 
-	_browserItemHtml: function(item) {
+	_browserItemHtml(item) {
 		return '<div class="itemdiv">' + _.escape(item.name) + '</div>' +
 				'<div class="enterdiv"><i class="enter material-icons md-light md-em">play_circle_outline</i></div>';
 		//return '<div>' + _.escape(item.name) + '</div>';
-	},
+	};
 
 	// render all items in bulk.
-	_render: function() {
+	_render() {
 		console.log('listviewBrowser: _render start');
 		var t = new Date().getTime();
 
@@ -71,7 +70,7 @@ module.exports= listbase.extend({
 		//console.log('listviewBrowser: _render appended html in', (new Date().getTime() - t));
 
 		return;
-	},
-});
+	};
+};
 
 // vim: tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab

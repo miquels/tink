@@ -14,20 +14,20 @@
  *
  */
 
-var Backbone	= require('backbone'),
-	_			= require('underscore'),
-	$			= require('jquery');
-	Backbone.$	= $;
+import Backbone	from 'backbone';
+import _		from  'underscore';
+import $		from 'jquery';
 
 // 1x1 transparent pixel, inline.
 var pixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAA' +
 			'AC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=';
 
-module.exports = Backbone.View.extend({
+export default class Image extends Backbone.View {
 
-	initialize: function(options) {
+	constructor(options) {
+		super(options);
+		console.log('Image constructor called');
 
-		console.log('Image.initialize called');
 		_.extend(this, _.pick(options, [ 'url' ]));
 
 		this.uriparser = document.createElement('a');
@@ -56,29 +56,29 @@ module.exports = Backbone.View.extend({
 				return('change:' + i);
 		}).join(' '), this.render);
 		this.render();
-	},
+	};
 
-	_canon: function(path) {
+	_canon(path) {
 		this.uriparser.href = path;
 		return this.uriparser.href;
-	},
+	};
 
-	_cssbgurl: function(url) {
+	_cssbgurl(url) {
 		if (url == null || !url.match(/^url/))
 			return null;
 		return url.replace(/^url\(("|')?(.*?)("|')?\)$/, "$2");
-	},
+	};
 
-	_getimg: function() {
+	_getimg() {
 		var r;
 		if (this.type == 'bg')
 			r = this._cssbgurl(this.target.css('background-image'));
 		else
 			r = this.target.find("img").attr('src');
 		return r && r != '' && r != '#' ? r : null;
-	},
+	};
 
-	render: function() {
+	render() {
 		var url;
 		for (var i in this.item) {
 			url = this.model.get(this.item[i]);
@@ -103,7 +103,7 @@ module.exports = Backbone.View.extend({
 			return;
 		}
 		this.target.find("img").attr('src', url);
-	},
-});
+	};
+};
 
 // vim: tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab
