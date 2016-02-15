@@ -44,12 +44,13 @@ module.exports = tvlist.extend({
 		var name = _.isObject(movie) ? movie.name : movie;
 		//console.log('movies.select', name);
 		this.movies.getmovie(name)
-		.fail((jqXHR, textStatus) => {
-			console.log("movies.select: failed to load",
-											name, textStatus);
-		})
 		.done((movie) => {
 			this.setModel(movie, { focus: name }, 'movie');
+		})
+		.fail((jqXHR, textStatus) => {
+			if (jqXHR)
+				console.log("movies.select: failed to load",
+											name, textStatus);
 		})
 	},
 

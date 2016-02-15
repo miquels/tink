@@ -30,7 +30,8 @@ module.exports = tvlist.extend({
 			this.select(s);
 		})
 		.fail((jqXHR, textStatus) => {
-			console.log("tvshows.initialize: failed to load",
+			if (jqXHR)
+				console.log("tvshows.initialize: failed to load",
 											this.url, textStatus);
 		});
 	},
@@ -41,7 +42,8 @@ module.exports = tvlist.extend({
 		console.log('tvshows.select', name);
 		this.tvShows.getshow({ show: name })
 		.fail((jqXHR, textStatus) => {
-			console.log("tvshows.select: failed to load", name, textStatus);
+			if (jqXHR)
+				console.log("tvshows.select: failed to load", name, textStatus);
 		})
 		.done((show) => {
 			this.setModel(show, { focus: name }, 'show');

@@ -36,7 +36,8 @@ module.exports = tvlist.extend({
 			this.select(e);
 		})
 		.fail((jqXHR, textStatus) => {
-			console.log("TVSeasons.show: failed to load",
+			if (jqXHR)
+				console.log("TVSeasons.show: failed to load",
 										this.url, textStatus);
 		});
 	},
@@ -53,7 +54,8 @@ module.exports = tvlist.extend({
 			this.setModel(show, { focus: name }, 'episode');
 		})
 		.fail((jqXHR, textStatus) => {
-			console.log("tvepisodes.select: failed to load",
+			if (jqXHR)
+				console.log("tvepisodes.select: failed to load",
 											name, textStatus);
 		});
 	},

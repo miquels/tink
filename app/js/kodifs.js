@@ -298,10 +298,12 @@ function buildseason(season, data) {
 
 export default class KodiFS {
 
-	url = null;
+	url;
 	name = "";
 	path = '';
-	items = null;
+	items;
+	qlist;
+	qbusy;
 
 	constructor(opts) {
 		console.log('constructor called opts is ', opts);
@@ -311,6 +313,7 @@ export default class KodiFS {
 			this.url = this.url.replace(/^(web|)dav/, "http");
 		}
 		this.dirIndex = (this.proto == 'webdav') ? Webdav : Http;
+		this.qlist = [];
 	};
 
 	// Get a directory listing of tvshows / movies.
@@ -419,9 +422,10 @@ export default class KodiFS {
 	};
 
 	// Get the info for one show.
-	getshow (args) {
+	_getshow(args) {
+
 		return this.getOneShow(args.show)
-		.then(function(show) {
+		.then((show) => {
 
 			// make sure at least one deferred is present.
 			var defers = [ $.Deferred().resolve() ];
@@ -439,7 +443,7 @@ export default class KodiFS {
 
 			// wait for all of them to resolve or fail.
 			return $.when.apply($, defers)
-			.then(function() {
+			.then(() => {
 				// set 'show' shortcut
 				this.items.show = show;
 				// set 'season' shortcut.
@@ -455,12 +459,12 @@ export default class KodiFS {
 					show.episode = show.season.episodes[args.episode];
 				}
 				return show;
-			}.bind(this));
-		}.bind(this));
+			});
+		});
 	};
 
 	// Get gets the info for one movie.
-	getmovie (moviename) {
+	_getmovie(moviename) {
 
 		var r = this.getmovies().then((movies) => {
 
@@ -490,5 +494,41 @@ export default class KodiFS {
 
 		return r;
 	};
+
+	queue(func, ...args) {
+		if (this.qbusy) {
+			var d = $.Deferred();
+			this.qlist.push({ deferred: d, args: arguments });
+			return d;
+		}
+		this.qbusy = true;
+		return func(...args)
+		.then((ret) => {
+			// cancel outstanding requests, resolve the last one.
+			this.qbusy = false;
+			while (this.qlist.length > 0) {
+				var q = this.qlist.shift();
+				if (this.qlist.length > 0) {
+					q.deferred.reject(null);
+				} else {
+					setTimeout(() => {
+						var d = this.queue.apply(this, q.args)
+							.then(q.deferred.resolve)
+							.fail(q.deferred.reject);
+					}, 0);
+				}
+			}
+			return ret;
+		});
+	};
+
+	getshow(args) {
+		return this.queue(this._getshow.bind(this), args);
+	};
+
+	getmovie(args) {
+		return this.queue(this._getmovie.bind(this), args);
+	};
+
 };
 
