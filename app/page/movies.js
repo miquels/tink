@@ -28,14 +28,14 @@ module.exports = tvlist.extend({
 
 		// load the data.
 		this.movies.getmovies({ movie: options.movie })
-		.done((movies) => {
+		.then((movies) => {
 			this.model.set({ items: movies, focus: null });
 			var mv = movies.movie ? movies.movie : this.tvList.itemArray[0];
 			this.select(mv);
 		})
-		.fail((jqXHR, textStatus) => {
+		.catch((err) => {
 			console.log("movies.show: failed to load",
-											this.url, textStatus);
+										this.url, err.textStatus);
 		});
 	},
 
@@ -44,13 +44,13 @@ module.exports = tvlist.extend({
 		var name = _.isObject(movie) ? movie.name : movie;
 		//console.log('movies.select', name);
 		this.movies.getmovie(name)
-		.done((movie) => {
+		.then((movie) => {
 			this.setModel(movie, { focus: name }, 'movie');
 		})
-		.fail((jqXHR, textStatus) => {
-			if (jqXHR)
+		.catch((err) => {
+			if (err)
 				console.log("movies.select: failed to load",
-											name, textStatus);
+											name, err.textStatus);
 		})
 	},
 
@@ -59,7 +59,7 @@ module.exports = tvlist.extend({
 		var name = _.isObject(movie) ? movie.name : movie;
 		console.log('movies.enter', name, movie);
 		this.movies.getmovie(name)
-		.done((movie) => {
+		.then((movie) => {
 			Page.switchPage('videoplayer', {
 				url: Util.joinpath(this.movies.url, movie.path, movie.video),
 				backPage: 'movies',
@@ -70,9 +70,9 @@ module.exports = tvlist.extend({
 				subtitles: movie.subs,
 			});
 		})
-		.fail((jqXHR, textStatus) => {
+		.catch((err) => {
 			console.log("movies.enter: failed to load",
-											name, textStatus);
+											name, err.textStatus);
 		});
 	},
 });

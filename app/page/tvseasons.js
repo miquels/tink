@@ -23,15 +23,15 @@ module.exports = tvlist.extend({
 
 		// load the data
 		this.tvShows.getshow({ show: this.tvshow, season: options.season })
-		.done((show) => {
+		.then((show) => {
 			this.model.set({ items: show.seasons, focus: null });
 			var s = show.season ? show.season : this.tvList.itemArray[0];
 			this.select(s.name);
 		})
-		.fail((jqXHR, textStatus) => {
-			if (jqXHR)
+		.catch((err) => {
+			if (err)
 				console.log("tvseasons.show: failed to load",
-										this.url, textStatus);
+										this.url, err.textStatus);
 		});
 	},
 
@@ -41,13 +41,13 @@ module.exports = tvlist.extend({
 		console.log('tvseasons.select', name);
 
 		this.tvShows.getshow({ show: this.tvshow, season: name })
-		.done((show) => {
+		.then((show) => {
 			this.setModel(show, { focus: name }, 'season');
 		})
-		.fail((jqXHR, textStatus) => {
-			if (jqXHR)
+		.catch((err) => {
+			if (err)
 				console.log("tvseasons.select: failed to load",
-											name, textStatus);
+											name, err.textStatus);
 		});
 	},
 

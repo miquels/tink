@@ -7,7 +7,8 @@
  *
  */
 
-var $ = require('jquery');
+var $	= require('jquery'),
+	jqp	= require('./jqajax-promise.js');
 
 function Http(opts) {
 	for (var i in opts) {
@@ -55,11 +56,11 @@ Http.prototype = {
 		if (!url.match(/\/$/))
 			url += '/';
 
-		return $.ajax(url, {
+		return jqp(url, {
 			type: 'GET',
 			dataType: 'html',
-		}).then(function(data, textStatus, xhr) {
-			return parseindex(data, xhr);
+		}).then(function(resp) {
+			return parseindex(resp.data, resp.jqXHR);
 		});
 	},
 };

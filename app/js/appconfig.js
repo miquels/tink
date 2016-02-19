@@ -2,16 +2,19 @@
  *	Load and store config.
  */
 
-var $ = require('jquery');
+var $	= require('jquery'),
+	jqp	= require('./jqajax-promise.js');
 
 var config = {};
 
 function load(name, ok, fail) {
 	var cfgurl = location.pathname.replace(/[^\/]*$/, name);
 	console.log('loading config from ' + cfgurl);
-	$.getJSON(cfgurl).then(function(data) {
-		config = data;
-		ok(data);
+	jqp(cfgurl, {
+		dataType: "json",
+	}).then((resp) => {
+		config = resp.data;
+		ok(resp.data);
 	}, fail);
 }
 exports.load = load;

@@ -88,7 +88,7 @@ module.exports = Backbone.View.extend({
 		var urlitems = [ 'poster', 'banner', 'folder',
 							'fanart', 'thumb', 'nfo' ];
 
-		var model = { filling: true };
+		var model = { };
 
 		// set	show:poster		URL to show poster
 		//		season:poster	URL to season poster
@@ -121,23 +121,17 @@ module.exports = Backbone.View.extend({
 					if (o == 'nfo') {
 						var k2 = k, v2 = v;
 						NFO(v).then(function(data) {
-							if (model.filling) {
-								model[k+'JSON'] = data;
-							} else {
-								var m = {};
-								if (this.model.get(k2) == v)
-									m[k2+'JSON'] = data;
-								if (this.model.get('nfo') == v2)
-									m.nfoJSON = data;
-								this.model.set(m);
-							}
+							var m = {};
+							if (this.model.get(k2) == v)
+								m[k2+'JSON'] = data;
+							if (this.model.get('nfo') == v2)
+								m.nfoJSON = data;
+							this.model.set(m);
 						}.bind(this));
 					}
 				}
 			}
 		}
-		model.filling = null;
-		delete model.filling;
 
 		// shortcut for current context (show/season/episode)
 		for(var k in model) {

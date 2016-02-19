@@ -6,7 +6,8 @@
  */
 
 var $		= require('jquery'),
-	Util	= require('./util.js');
+	Util	= require('./util.js'),
+	jqp		= require('./jqajax-promise.js');
 
 function Webdav(opts) {
 	for (var i in opts) {
@@ -171,14 +172,14 @@ Webdav.prototype = {
 
 		url = Util.cleanURL(url, true, 'Webdav.propfind');
 
-		return $.ajax(url, {
+		return jqp(url, {
 			type: 'PROPFIND',
 			dataType: 'xml',
 			headers: {
 				Depth: depth,
 			},
-		}).then(function(data, textStatus, xhr) {
-			return parsemulti(data, xhr, mapper, aux);
+		}).then(function(resp) {
+			return parsemulti(resp.data, resp.jqXHR, mapper, aux);
 		});
 	},
 

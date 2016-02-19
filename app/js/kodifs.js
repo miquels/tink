@@ -321,7 +321,7 @@ export default class KodiFS {
 
 		if (this.items != null) {
 			console.log("kodifs.dirlist: returning cached " + type);
-			return $.Deferred().resolve(this.items);
+			return Promise.resolve(this.items);
 		}
 
 		console.log("kodifs.dirlist: requesting " + type + " from server");
@@ -363,11 +363,11 @@ export default class KodiFS {
 			if (!show) {
 				console.log("kodifs.getOneShow: showname " +
 								showname  + " not found");
-				return $.Deferred().reject();
+				return Promise.reject(new Error('show not found'));
 			}
 			if (show.seasons) {
 				console.log("kodifs.getOneShow: returning cached " + showname);
-				return $.Deferred().resolve(show);
+				return Promise.resolve(show);
 			}
 
 
@@ -394,14 +394,14 @@ export default class KodiFS {
 			if (!season) {
 				console.log("kodifs.getSeasonEpisodes: season " +
 								seasonname  + " not found");
-				return $.Deferred().reject();
+				return Promise.reject(new Error('season not found'));
 			}
 
 			// already have it?
 			if (season.episodes) {
 				console.log("kodifs.getSeasonEpisodes: returning cached " +
 												seasonname);
-				return $.Deferred().resolve(show);
+				return Promise.resolve(show);
 			}
 
 			console.log("kodifs.getSeasonEpisodes: requesting " +
@@ -428,7 +428,7 @@ export default class KodiFS {
 		.then((show) => {
 
 			// make sure at least one deferred is present.
-			var defers = [ $.Deferred().resolve() ];
+			var defers = [ Promise.resolve() ];
 
 			// get season info as well ?
 			if (Object.keys(show.seasons).length > 0 &&
@@ -442,7 +442,7 @@ export default class KodiFS {
 			}
 
 			// wait for all of them to resolve or fail.
-			return $.when.apply($, defers)
+			return Promise.all(defers)
 			.then(() => {
 				// set 'show' shortcut
 				this.items.show = show;
@@ -472,11 +472,11 @@ export default class KodiFS {
 			if (!movie) {
 				console.log("kodifs.getmovie: moviename " +
 								moviename  + " not found");
-				return $.Deferred().reject();
+				return Promise.reject(new Error('movie not found'));
 			}
 			if (movie.video) {
 				console.log("kodifs.getmovie: returning cached " + moviename);
-				return $.Deferred().resolve(movie);
+				return Promise.resolve(movie);
 			}
 
 			console.log("kodifs.getmovie: requesting " +
@@ -514,7 +514,7 @@ export default class KodiFS {
 					setTimeout(() => {
 						var d = this.queue.apply(this, q.args)
 							.then(q.deferred.resolve)
-							.fail(q.deferred.reject);
+							.catch(q.deferred.reject);
 					}, 0);
 				}
 			}
@@ -523,11 +523,13 @@ export default class KodiFS {
 	};
 
 	getshow(args) {
-		return this.queue(this._getshow.bind(this), args);
+		//return this.queue(this._getshow.bind(this), args);
+		return this._getshow(args);
 	};
 
 	getmovie(args) {
-		return this.queue(this._getmovie.bind(this), args);
+		//return this.queue(this._getmovie.bind(this), args);
+		return this._getmovie(args);
 	};
 
 };

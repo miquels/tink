@@ -24,15 +24,16 @@ module.exports = tvlist.extend({
 
 		// load the data.
 		this.tvShows.getshows({ show: this.tvshow })
-		.done((shows) => {
+		.then((shows) => {
 			this.model.set({ items: shows, focus: null });
 			var s = shows.show ? shows.show : this.tvList.itemArray[0];
+			this.model.set({ focus: s.name });
 			this.select(s);
 		})
-		.fail((jqXHR, textStatus) => {
-			if (jqXHR)
+		.catch((err) => {
+			if (err)
 				console.log("tvshows.initialize: failed to load",
-											this.url, textStatus);
+											this.url, err.textStatus);
 		});
 	},
 
@@ -40,13 +41,16 @@ module.exports = tvlist.extend({
 	select: function(show) {
 		var name = _.isObject(show) ? show.name : show;
 		console.log('tvshows.select', name);
+		this._showname = name;
 		this.tvShows.getshow({ show: name })
-		.fail((jqXHR, textStatus) => {
-			if (jqXHR)
-				console.log("tvshows.select: failed to load", name, textStatus);
+		.then((show) => {
+			if (show.name == this._showname)
+				this.setModel(show, {}, 'show');
 		})
-		.done((show) => {
-			this.setModel(show, { focus: name }, 'show');
+		.catch((err) => {
+			if (err)
+				console.log("tvshows.select: failed to load",
+											name, err.textStatus);
 		});
 	},
 

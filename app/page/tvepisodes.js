@@ -30,15 +30,15 @@ module.exports = tvlist.extend({
 			season: this.season,
 			episode: options.episode,
 			deep: true })
-		.done((show) => {
+		.then((show) => {
 			this.model.set({ items: show.season.episodes, focus: null });
 			var e = show.episode ? show.episode : this.tvList.itemArray[0];
 			this.select(e);
 		})
-		.fail((jqXHR, textStatus) => {
-			if (jqXHR)
+		.catch((err) => {
+			if (err)
 				console.log("TVSeasons.show: failed to load",
-										this.url, textStatus);
+										this.url, err.textStatus);
 		});
 	},
 
@@ -49,14 +49,13 @@ module.exports = tvlist.extend({
 			show: this.tvshow,
 			season: this.season,
 			episode: name})
-		.done((show) => {
-			console.log('XXX focus[', name, '[');
+		.then((show) => {
 			this.setModel(show, { focus: name }, 'episode');
 		})
-		.fail((jqXHR, textStatus) => {
-			if (jqXHR)
+		.catch((err) => {
+			if (err)
 				console.log("tvepisodes.select: failed to load",
-											name, textStatus);
+											name, err.textStatus);
 		});
 	},
 
@@ -67,7 +66,7 @@ module.exports = tvlist.extend({
 			show: this.tvshow,
 			season: this.season,
 			episode: ep })
-		.done((show) => {
+		.then((show) => {
 			var url = Util.joinpath(
 				this.url, show.path,
 				show.season.path, ep.path, ep.video
@@ -84,9 +83,9 @@ module.exports = tvlist.extend({
 				subtitles: ep.subs,
 			});
 		})
-		.fail((jqXHR, textStatus) => {
+		.catch((err) => {
 			console.log("tvepisodes.enter: failed to load",
-											ep.name, textStatus);
+											ep.name, err.textStatus);
 		});
 	},
 });

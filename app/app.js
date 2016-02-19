@@ -15,7 +15,7 @@ var Mainmenu	= require('./page/mainmenu.js'),
 	TVEpisodes	= require('./page/tvepisodes.js'),
 	TVSeasons	= require('./page/tvseasons.js'),
 	Movies		= require('./page/movies.js'),
-	VideoPlayer	= require('./page/video.js');
+	VideoPlayer	= require('./page/pvideo.js');
 
 var Nfo			= require('./view/nfo.js'),
 	NfoTemplate	= require('./view/nfotemplate.js'),

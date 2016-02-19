@@ -5,6 +5,7 @@
 
 var $ = require('jquery');
 var util = require('./util.js');
+var jqp = require('./jqajax-promise.js');
 
 var cache = {};
 var timeout = 120;
@@ -16,23 +17,23 @@ function get(url) {
 
 	// if we have a valid cache entry, return it.
 	if (c && c.json)
-		return $.Deferred().resolve(c.json);
+		return Promise.resolve(c.json);
 
 	// if we have an invalid cache entry, retry after timeout.
 	if (c && c.time < now + timeout)
-		return $.Deferred().reject(null, 'error', null);
+		return Promise.reject(new Error('timeout'));
 
 	// get it.
 	c = cache[url] = {
 		time: now,
 		url: url,
 	};
-	return $.ajax(url, {
+	return jqp(url, {
 		dataType: 'xml',
-	}).then(function(data, textStatus, xhr) {
-		c.json = parse(data);
+	}).then(function(resp) {
+		c.json = parse(resp.data);
 		if (!c.json)
-			return $.Deferred().reject(null, 'error', null);
+			return Promise.reject(new Error('nfo parse error'));
 		return c.json;
 	});
 }
