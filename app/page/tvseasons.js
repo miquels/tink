@@ -24,8 +24,9 @@ module.exports = tvlist.extend({
 		// load the data
 		this.tvShows.getshow({ show: this.tvshow, season: options.season })
 		.then((show) => {
-			this.model.set({ items: show.seasons, focus: null });
+			this.model.set({ items: show.seasons });
 			var s = show.season ? show.season : this.tvList.itemArray[0];
+			this.model.set('focus', s.name);
 			this.select(s.name);
 		})
 		.catch((err) => {
@@ -35,6 +36,11 @@ module.exports = tvlist.extend({
 		});
 	},
 
+	hide: function() {
+		this.$el.hide();
+		this.model.set('focus', null);
+	},
+
 	// select a different season
 	select: function(season) {
 		var name = _.isObject(season) ? season.name : season;
@@ -42,7 +48,7 @@ module.exports = tvlist.extend({
 
 		this.tvShows.getshow({ show: this.tvshow, season: name })
 		.then((show) => {
-			this.setModel(show, { focus: name }, 'season');
+			this.setModel(show, {}, 'season');
 		})
 		.catch((err) => {
 			if (err)

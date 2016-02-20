@@ -31,8 +31,9 @@ module.exports = tvlist.extend({
 			episode: options.episode,
 			deep: true })
 		.then((show) => {
-			this.model.set({ items: show.season.episodes, focus: null });
+			this.model.set({ items: show.season.episodes });
 			var e = show.episode ? show.episode : this.tvList.itemArray[0];
+			this.model.set('focus', e.name);
 			this.select(e);
 		})
 		.catch((err) => {
@@ -40,6 +41,11 @@ module.exports = tvlist.extend({
 				console.log("TVSeasons.show: failed to load",
 										this.url, err.textStatus);
 		});
+	},
+
+	hide: function() {
+		this.$el.hide();
+		this.model.set('focus', null);
 	},
 
 	// select a different episode
@@ -50,7 +56,7 @@ module.exports = tvlist.extend({
 			season: this.season,
 			episode: name})
 		.then((show) => {
-			this.setModel(show, { focus: name }, 'episode');
+			this.setModel(show, {}, 'episode');
 		})
 		.catch((err) => {
 			if (err)

@@ -25,7 +25,7 @@ module.exports = tvlist.extend({
 		// load the data.
 		this.tvShows.getshows({ show: this.tvshow })
 		.then((shows) => {
-			this.model.set({ items: shows, focus: null });
+			this.model.set({ items: shows });
 			var s = shows.show ? shows.show : this.tvList.itemArray[0];
 			this.model.set({ focus: s.name });
 			this.select(s);
@@ -37,15 +37,18 @@ module.exports = tvlist.extend({
 		});
 	},
 
+	hide: function() {
+		this.$el.hide();
+		this.model.set('focus', null);
+	},
+
 	// select a different show
 	select: function(show) {
 		var name = _.isObject(show) ? show.name : show;
 		console.log('tvshows.select', name);
-		this._showname = name;
 		this.tvShows.getshow({ show: name })
 		.then((show) => {
-			if (show.name == this._showname)
-				this.setModel(show, {}, 'show');
+			this.setModel(show, {}, 'show');
 		})
 		.catch((err) => {
 			if (err)

@@ -29,8 +29,9 @@ module.exports = tvlist.extend({
 		// load the data.
 		this.movies.getmovies({ movie: options.movie })
 		.then((movies) => {
-			this.model.set({ items: movies, focus: null });
+			this.model.set({ items: movies });
 			var mv = movies.movie ? movies.movie : this.tvList.itemArray[0];
+			this.model.set('focus', mv.name);
 			this.select(mv);
 		})
 		.catch((err) => {
@@ -39,13 +40,18 @@ module.exports = tvlist.extend({
 		});
 	},
 
+	hide: function() {
+		this.$el.hide();
+		this.model.set('focus', null);
+	},
+
 	// select a different movie
 	select: function(movie) {
 		var name = _.isObject(movie) ? movie.name : movie;
 		//console.log('movies.select', name);
 		this.movies.getmovie(name)
 		.then((movie) => {
-			this.setModel(movie, { focus: name }, 'movie');
+			this.setModel(movie, {}, 'movie');
 		})
 		.catch((err) => {
 			if (err)
