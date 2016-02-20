@@ -23,6 +23,7 @@ import  $		from 'jquery';
 import  _		from 'underscore';
 import  Http	from './http.js';
 import  Webdav	from './webdav.js';
+import PQueue	from './pqueue.js';
 
 // helper: decode season / episode from filename.
 function decodeShowName(e) {
@@ -302,8 +303,7 @@ export default class KodiFS {
 	name = "";
 	path = '';
 	items;
-	qlist;
-	qbusy;
+	pqueue;
 
 	constructor(opts) {
 		console.log('constructor called opts is ', opts);
@@ -313,7 +313,7 @@ export default class KodiFS {
 			this.url = this.url.replace(/^(web|)dav/, "http");
 		}
 		this.dirIndex = (this.proto == 'webdav') ? Webdav : Http;
-		this.qlist = [];
+		this.pqueue = new PQueue();
 	};
 
 	// Get a directory listing of tvshows / movies.
@@ -495,41 +495,12 @@ export default class KodiFS {
 		return r;
 	};
 
-	queue(func, ...args) {
-		if (this.qbusy) {
-			var d = $.Deferred();
-			this.qlist.push({ deferred: d, args: arguments });
-			return d;
-		}
-		this.qbusy = true;
-		return func(...args)
-		.then((ret) => {
-			// cancel outstanding requests, resolve the last one.
-			this.qbusy = false;
-			while (this.qlist.length > 0) {
-				var q = this.qlist.shift();
-				if (this.qlist.length > 0) {
-					q.deferred.reject(null);
-				} else {
-					setTimeout(() => {
-						var d = this.queue.apply(this, q.args)
-							.then(q.deferred.resolve)
-							.catch(q.deferred.reject);
-					}, 0);
-				}
-			}
-			return ret;
-		});
-	};
-
 	getshow(args) {
-		//return this.queue(this._getshow.bind(this), args);
-		return this._getshow(args);
+		return this.pqueue.push(this._getshow.bind(this, args));
 	};
 
 	getmovie(args) {
-		//return this.queue(this._getmovie.bind(this), args);
-		return this._getmovie(args);
+		return this.pqueue.push(this._getmovie.bind(this, args));
 	};
 
 };
