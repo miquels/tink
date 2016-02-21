@@ -23,8 +23,7 @@ var	Backbone	= require('backbone'),
 	tvlistmodel = require('./tvlistmodel.js'),
 	listview	= require('../view/list.js'),
 	Page		= require('../js/page.js'),
-	Util		= require('../js/util.js'),
-	NFO			= require('../js/nfo.js');
+	Util		= require('../js/util.js');
 
 var tvshowsFS;
 var moviesFS;
@@ -112,23 +111,9 @@ module.exports = Backbone.View.extend({
 			url = Util.joinpath(url, info.path);
 			for (var o in _.pick(info, urlitems)) {
 				if (info[o] != null) {
-
 					var k = ctx + ':' + o;
 					var v = Util.joinpath(url, info[o]);
 					model[k] = v;
-
-					// set nfoJSON async.
-					if (o == 'nfo') {
-						var k2 = k, v2 = v;
-						NFO(v).then(function(data) {
-							var m = {};
-							if (this.model.get(k2) == v)
-								m[k2+'JSON'] = data;
-							if (this.model.get('nfo') == v2)
-								m.nfoJSON = data;
-							this.model.set(m);
-						}.bind(this));
-					}
 				}
 			}
 		}

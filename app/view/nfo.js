@@ -20,58 +20,84 @@
  *  TODO: merge this with nfotemplateview somehow.
  */
 
-import Backbone from 'backbone';
-import $		from 'jquery';
-import _		from 'underscore';
+import Backbone		from 'backbone';
+import $			from 'jquery';
+import _			from 'underscore';
+import * as NfoData	from '../js/nfodata.js';
 
 export default class NFO extends Backbone.View {
 
 	constructor(options) {
 		super(options);
 		console.log('Nfo.constructor called');
+		this.nfoURL = {};
+		this.nfoJSON = {};
+		this.$elems = this.$el.find("[data-key]");
+		if (this.$el.data('key'))
+			this.$elems = this.$elems.add(this.$el);
+		this.$elems.each((idx, el) => {
+			var nfos = $(el).data('key').split(/[ \t]+/);
+			for (var i in nfos) {
+				// show:ATTR -> show:nfo, ATTR -> nfo.
+				var n = nfos[i].replace(/[^:]*$/, "nfo");
+				this.nfoURL[n] = null;
+				this.nfoJSON[n] = {};
+			}
+		});
 		this.listenTo(this.model, 'change', this.change);
-		this.listenTo(this.model, 'reset', this.render);
+		//this.listenTo(this.model, 'reset', this.render);
 		this.render();
 	};
 
 	render(options) {
 		//console.log("Nfo.render");
-		var self = this;
-		this.$el.find("[data-key]").each(function() {
-			self.renderOne($(this));
+		this.$elems.each((idx, el) => {
+			this.renderOne($(el));
 		});
-		if (this.$el.data('key'))
-			this.renderOne(this.$el);
 	};
 
-	renderOne(el) {
+	renderOne($el) {
 		//console.log('Nfo.renderOne checking', nfo, key);
-		var json, key;
-		var keys = el.data('key').split(/[ \t]+/);
+		var data;
+		var keys = $el.data('key').split(/[ \t]+/);
 		for (var i in keys) {
-			key = keys[i];
-			var nfo = key.replace(/[_0-9a-z]+$/, 'nfo');
-			key = key.replace(/^.*:/, '');
-			json = this.model.get(nfo + 'JSON');
-			if (json && json[key])
+			var n = keys[i].replace(/[^:]*$/, "nfo");
+			var a = keys[i].replace(/^.*:/, "");
+			data = this.nfoJSON[n][a];
+			if (data)
 				break;
 		}
-		if (json == null || json[key] == null) {
-			el.hide();
+		if (data == null) {
+			$el.hide();
 			return;
 		}
-		if ( el.data('hashtml') == null)
-			el.data('hashtml', el.html() == '' ? 0 : 1)
-		if (el.data('hashtml') == 0)
-			el.html(_.escape(json[key]));
-		el.show();
+		if ( $el.data('hashtml') == null)
+			$el.data('hashtml', $el.html() == '' ? 0 : 1)
+		if ($el.data('hashtml') == 0)
+			$el.html(_.escape(data));
+		$el.show();
 	};
 
 	change(model) {
-		if (_.find(_.keys(model.changed, function(key) {
-			return key.match(/nfoJSON/);
-		})))
-			this.render();
+		var plist = [];
+		for (var nfo in model.changed) {
+			var url = this.nfoURL[nfo];
+			if (url !== undefined && model.get(nfo) != url) {
+				var n = nfo;
+				var u = model.get(nfo);
+				var p = NfoData.get(u)
+				.then((data) => {
+					var urlnow = model.get(n);
+					if (urlnow == u) {
+						this.nfoURL[n] = u;
+						this.nfoJSON[n] = data;
+					}
+				});
+				plist.push(p);
+			}
+		}
+		if (plist.length > 0)
+			Promise.all(plist).then(this.render.bind(this));
 	};
 };
 

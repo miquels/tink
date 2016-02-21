@@ -1,16 +1,19 @@
 /*
- *	NFO		Get NFO file, parse it into JSON, and return it.
+ *	NFOData	Get NFO file, parse it into JSON, and return it.
  *			This module also caches the JSON.
  */
 
-var $ = require('jquery');
-var util = require('./util.js');
-var jqp = require('./jqajax-promise.js');
+import $	from 'jquery';
+import util	from './util.js';
+import jqp	from './jqajax-promise.js';
 
 var cache = {};
-var timeout = 120;
+var retry = 120;
 
-function get(url) {
+export function get(url) {
+	if (url == null)
+		return Promise.resolve({});
+
 	url = util.cleanURL(url, false, 'nfo.get');
 	var c = cache[url];
 	var now = (new Date).getTime();
@@ -19,25 +22,35 @@ function get(url) {
 	if (c && c.json)
 		return Promise.resolve(c.json);
 
-	// if we have an invalid cache entry, retry after timeout.
-	if (c && c.time < now + timeout)
-		return Promise.reject(new Error('timeout'));
+	// promise not yet resolved?
+	if (c && c.jqp)
+		return c.jqp;
+
+	// invalid entry, not yet timed out?
+	if (c && c.time > now + retry)
+		return Promise.resolve({});
 
 	// get it.
 	c = cache[url] = {
 		time: now,
 		url: url,
 	};
-	return jqp(url, {
+	c.jqp = jqp(url, {
 		dataType: 'xml',
 	}).then(function(resp) {
+		c.jqp = null;
 		c.json = parse(resp.data);
-		if (!c.json)
-			return Promise.reject(new Error('nfo parse error'));
+		if (!c.json) {
+			console.log('url:', url, 'nfo parse error');
+			return Promise.resolve({});
+		}
 		return c.json;
+	}).catch((err) => {
+		console.log(err);
+		return {};
 	});
+	return c.jqp;
 }
-module.exports = get;
 
 /*
  *	This function parses an XML NFO file and turns it into
