@@ -78,20 +78,16 @@ window.addEventListener('load', function main() {
 		}, 5);
 	});
 
-	Appconfig.load('appconfig.json',
-		function(config) {
-			// XXX debug
-			//$('body').keydown(function(ev) {
-			//	console.log('body keydown code ' + ev.which);
-			//});
-			Platform.ready();
-			Page.switchPage('mainmenu');
-		}, function(jqXHR, error) {
-			console.log('main: error reading appconfig.cfg: ' + error);
-			Page.switchPage('error', {
-				error: error,
-			});
-		}
-	);
+	Appconfig.load('appconfig.json')
+	.then((config) => {
+		Platform.ready();
+		Page.switchPage('mainmenu');
+	})
+	.catch((err) => {
+		console.log('main: error reading appconfig.cfg: ' + err.textStatus);
+		Page.switchPage('error', {
+			error: err.textStatus,
+		});
+	});
 });
 
