@@ -31,7 +31,7 @@ function parseTime(tm) {
 	for (var n = 1; n < 5; n++) {
 		t.push(parseInt(s[n]));
 	}
-	var r =  (t[0] * 1440) + (t[1] * 60) + t[2] + (t[3] / 1000);
+	var r =  (t[0] * 3600) + (t[1] * 60) + t[2] + (t[3] / 1000);
 	return r;
 }
 
